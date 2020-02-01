@@ -34,7 +34,7 @@ static SDL_GLContext gl_context;
 glm::vec4 diffuseColour(1.f,1.f,1.f,1.f);
 
 glm::vec3 viewRot(1.0f);
-glm::vec3 viewRotDelta(1.0f,1.0f,1.0f);
+glm::vec3 viewRotDelta(0.5f,0.7f,1.0f);
 
 std::chrono::time_point<std::chrono::high_resolution_clock> startTime;
 std::chrono::time_point<std::chrono::high_resolution_clock> lastFrameTime;
@@ -148,10 +148,14 @@ void checkErrorCompileShader(GLint shader) {
 void initialiseGLData() {
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
+	
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	
+	glEnable(GL_CULL_FACE);
 	glFrontFace(GL_CCW);
 	glCullFace(GL_BACK);
+	
 	glClearColor( 0.2f, 0.2f, 0.2f, 1.0f );
 	
 	// Vertex data TODO: Placeholder triangle
@@ -163,7 +167,7 @@ void initialiseGLData() {
 			{-1.0,-1.0,1.0},
 			{-1.0,-1.0,1.0},
 			{1.0,-1.0,-1.0},
-			{1.0,-1.0,1.0},*/
+			{1.0,-1.0,1.0},
 			// top
 			{-1.0,1.0,1.0},
 			{1.0,1.0,1.0},
@@ -178,10 +182,45 @@ void initialiseGLData() {
 			{-1.0,1.0,1.0},
 			{-1.0,-1.0,-1.0},
 			{-1.0,-1.0,1.0},
-			// right
+			// right*/
 			
 			
-			
+			{-1.0f,-1.0f,-1.0f},
+			{-1.0f,-1.0f, 1.0f},
+			{-1.0f, 1.0f, 1.0f},
+			{1.0f, 1.0f,-1.0f},
+			{-1.0f,-1.0f,-1.0f},
+			{-1.0f, 1.0f,-1.0f},
+			{1.0f,-1.0f, 1.0f},
+			{-1.0f,-1.0f,-1.0f},
+			{1.0f,-1.0f,-1.0f},
+			{1.0f, 1.0f,-1.0f},
+			{1.0f,-1.0f,-1.0f},
+			{-1.0f,-1.0f,-1.0f},
+			{-1.0f,-1.0f,-1.0f},
+			{-1.0f, 1.0f, 1.0f},
+			{-1.0f, 1.0f,-1.0f},
+			{1.0f,-1.0f, 1.0f},
+			{-1.0f,-1.0f, 1.0f},
+			{-1.0f,-1.0f,-1.0f},
+			{-1.0f, 1.0f, 1.0f},
+			{-1.0f,-1.0f, 1.0f},
+			{1.0f,-1.0f, 1.0f},
+			{1.0f, 1.0f, 1.0f},
+			{1.0f,-1.0f,-1.0f},
+			{1.0f, 1.0f,-1.0f},
+			{1.0f,-1.0f,-1.0f},
+			{1.0f, 1.0f, 1.0f},
+			{1.0f,-1.0f, 1.0f},
+			{1.0f, 1.0f, 1.0f},
+			{1.0f, 1.0f,-1.0f},
+			{-1.0f, 1.0f,-1.0f},
+			{1.0f, 1.0f, 1.0f},
+			{-1.0f, 1.0f,-1.0f},
+			{-1.0f, 1.0f, 1.0f},
+			{1.0f, 1.0f, 1.0f},
+			{-1.0f, 1.0f, 1.0f},
+			{1.0f,-1.0f, 1.0f},
 		};
 		glGenBuffers(1, &vertexBuffer);
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
