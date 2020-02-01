@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WebGL Test</title>
+    <style>
+			body {
+				background: #222222;
+				margin: 0 auto;
+				padding: 0;
+				width: 800px;
+			}
+    </style>
+</head>
+<body>
+	<canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
+
+  <script type="text/javascript">
+    var Module = {
+			canvas: (function() { return document.getElementById('canvas'); })()
+	  };
+  </script>
+  <script type="text/javascript" async defer src="webGLTest.js"></script>
+	
+</body>
+</html>

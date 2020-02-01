@@ -25,6 +25,8 @@
 #include "glm/gtc/type_ptr.hpp"
 
 SDL_Window* window = nullptr;
+GLfloat windowWidth = 800;
+GLfloat windowHeight = 600;
 SDL_Surface *screen = nullptr;
 static SDL_GLContext gl_context;
 
@@ -33,7 +35,9 @@ struct FetchData {
 	bool ready = false;
 };
 
-std::map<emscripten_fetch_t*, FetchData> currentFetches;
+#ifdef __EMSCRIPTEN__
+  std::map<emscripten_fetch_t*, FetchData> currentFetches;
+#endif
 
 GLuint vertexBuffer, shaderProgram;
 GLint shaderAttribute_vertCoord;
@@ -70,6 +74,7 @@ std::string currentShape;
 
 float viewRot(0.0);
 
+#ifdef __EMSCRIPTEN__
 void downloadSucceeded(emscripten_fetch_t* fetch) {
   std::cout << "downloadSucceeded in thread " << std::this_thread::get_id() << std::endl;
 	std::cout << "Downloaded " << fetch->numBytes << " bytes from " << fetch->url << std::endl;
@@ -99,6 +104,7 @@ void downloadProgress(emscripten_fetch_t* fetch) {
     printf("Downloading %s.. %lld bytes complete.\n", fetch->url, fetch->dataOffset + fetch->numBytes);
   }
 }
+#endif
 
 void initialiseGLData() {
 	glEnable(GL_DEPTH_TEST);
@@ -141,19 +147,42 @@ void initialiseGLData() {
 	}
 }
 
+#ifndef __EMSCRIPTEN
+void endApplication() {
+  SDL_DestroyWindow(window);
+  SDL_Quit();
+  std::exit(0);
+}
+#endif
+
 void render() {
 
-  viewRot += 0.01;
+#ifndef __EMSCRIPTEN__
+  // Get the next event
+  SDL_Event event;
+  if(SDL_PollEvent(&event))
+  {
+    if(event.type == SDL_QUIT)
+    {
+      endApplication();
+    }
+  }
+#endif
+
+
+  // viewRot += 0.01;
+
   if( viewRot > 2 * 3.14 ) viewRot = 0.0;
   
-  glm::mat4 projMat = glm::ortho( -180.0f, 180.0f, -90.0f, 90.0f, 1.f, -1.f );
-  glm::mat4 viewMat(1.0);
+  // glm::mat4 projMat = glm::ortho( -180.0f, 180.0f, -90.0f, 90.0f, 1.f, -1.f );
+  glm::mat4 projMat = glm::perspective( 90.0f, static_cast<GLfloat>(windowWidth) / static_cast<GLfloat>(windowHeight), 0.1f, 100.0f );
+  glm::mat4 viewMat = glm::lookAt( glm::vec3(0.0, 0.0, 2.0), glm::vec3(0.0,0.0,0.0), glm::vec3(0.0,1.0,0.0) );
   viewMat = glm::rotate( viewMat, viewRot, glm::vec3(0.0, 0.0, 1.0) );
   auto mvp = projMat * viewMat /* * modelMat */; 
   
   SDL_GL_MakeCurrent(window, gl_context);
   
-  glViewport(0,0,800,600);
+  glViewport(0,0,windowWidth,windowHeight);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   
   glUseProgram(shaderProgram);
@@ -164,6 +193,7 @@ void render() {
   
   SDL_GL_SwapWindow(window);
 
+#ifdef __EMSCRIPTEN__
 	auto it = currentFetches.begin();
 	while( it != currentFetches.end() ) {
 		auto& fetchOp = it->first;
@@ -237,31 +267,23 @@ void render() {
   std::string url = "http://localhost:3000/data/";
   url.append(currentShape);	
   currentFetches[ emscripten_fetch(&attr, url.c_str())] = {};
+#endif
 }
 
 
 int main(int argc, char** argv) {
-  printf("hello, world!\n");
-
-  printf("you should see a smoothly-colored square - no sharp lines but the square borders!\n");
-  printf("and here is some text that should be HTML-friendly: amp: |&| double-quote: |\"| quote: |'| less-than, greater-than, html-like tags: |<cheez></cheez>|\nanother line.\n");
-
-  /* 
   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
   SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
   SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 2);
-  */
 
   SDL_Init(SDL_INIT_VIDEO);
   SDL_Renderer* renderer = nullptr;
-  SDL_CreateWindowAndRenderer(800, 600, SDL_WINDOW_OPENGL, &window, &renderer);
+  SDL_CreateWindowAndRenderer(windowWidth, windowHeight, SDL_WINDOW_OPENGL, &window, &renderer);
 
   // TODO: Context flags
   gl_context = SDL_GL_CreateContext(window);
   
-  //screen = SDL_SetVideoMode(256, 256, 32, SDL_SWSURFACE);
-
   currentShape = *shapes.begin();
 
   initialiseGLData();
