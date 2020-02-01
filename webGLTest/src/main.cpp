@@ -160,31 +160,7 @@ void initialiseGLData() {
 	
 	// Vertex data TODO: Placeholder triangle
 	{
-		vertices = {
-			// bottom
-			/*{-1.0,-1.0,-1.0},
-			{1.0,-1.0,-1.0},
-			{-1.0,-1.0,1.0},
-			{-1.0,-1.0,1.0},
-			{1.0,-1.0,-1.0},
-			{1.0,-1.0,1.0},
-			// top
-			{-1.0,1.0,1.0},
-			{1.0,1.0,1.0},
-			{-1.0,1.0,-1.0},
-			{-1.0,1.0,-1.0},
-			{1.0,1.0,1.0},
-			{1.0,1.0,-1.0},
-			// left
-			{-1.0,1.0,-1.0},
-			{-1.0,-1.0,-1.0},
-			{-1.0,1.0,1.0},
-			{-1.0,1.0,1.0},
-			{-1.0,-1.0,-1.0},
-			{-1.0,-1.0,1.0},
-			// right*/
-			
-			
+		vertices = {			
 			{-1.0f,-1.0f,-1.0f},
 			{-1.0f,-1.0f, 1.0f},
 			{-1.0f, 1.0f, 1.0f},
@@ -229,14 +205,12 @@ void initialiseGLData() {
 	
 	// Shader program
 	{
-		std::cout << "Compiling vertex shader" << std::endl;
 		auto vertShader = glCreateShader(GL_VERTEX_SHADER);
 		const char* vsource = shaderSource_Vertex.c_str();
 		glShaderSource(vertShader, 1, &vsource, nullptr);
 		glCompileShader(vertShader);
 		checkErrorCompileShader(vertShader);
 		
-		std::cout << "Compiling fragment shader" << std::endl;
 		auto fragShader = glCreateShader(GL_FRAGMENT_SHADER);
 		const char* fsource = shaderSource_Fragment.c_str();
 		glShaderSource(fragShader, 1, &fsource, nullptr);
@@ -270,11 +244,6 @@ void render() {
 	
 	float renderDelta = static_cast<float>(std::chrono::duration_cast<std::chrono::microseconds>(now - lastFrameTime).count()) / 1e6f;
 	lastFrameTime = now;
-	
-	//auto secsSinceStart = static_cast<float>(std::chrono::duration_cast<std::chrono::milliseconds>(now - startTime).count()) / 1000.0f;
-	//auto renderDelta = secsSinceStart - lastFrameTime;
-	//std::cout << "GAH!: " << renderDelta << std::endl;
-	//lastFrameTime = static_cast<float>(std::chrono::duration_cast<std::chrono::milliseconds>(now - startTime).count());
 	
 #ifndef __EMSCRIPTEN__
   // Get the next event
@@ -337,7 +306,6 @@ void render() {
 			// The data is now available at fetch->data[0] through fetch->data[fetch->numBytes-1];
 			
 			std::string fetchPayload( fetchOp->data, fetchOp->numBytes );
-			// std::cout << "Triangle coords: " << fetchPayload << std::endl;
 					  
 		  std::regex reg("\\s+");
 		  std::sregex_token_iterator rit(fetchPayload.begin(), fetchPayload.end(), reg, -1);
@@ -417,7 +385,7 @@ int main(int argc, char** argv) {
   gl_context = SDL_GL_CreateContext(window);
   
 	auto glVer = glGetString(GL_VERSION);
-	std::cout << "OpenGL Version: " << glVer << std::endl;
+	std::cout << "OpenGL initialised: " << glVer << std::endl;
   
   if( !shapes.empty() ) currentShape = *shapes.begin();
 
