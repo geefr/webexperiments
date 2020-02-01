@@ -7,7 +7,12 @@ if( CMAKE_SYSTEM_NAME MATCHES "Emscripten" )
   set( EMSCRIPTEN TRUE )
 endif()
 
+
+
 if( EMSCRIPTEN )
+  set( INSTALL_BIN "" )
+  set( INSTALL_LIB "" )
+  
   # Fetch options
   # enable fetches, enable waitable fetches on all threads
   # PTHREADS support requires SharedArrayBuffer support in browser. Disabled in many as of ~Sep 2019 due to Spectre vulns
@@ -22,10 +27,18 @@ if( EMSCRIPTEN )
   # ALLOW_MEMORY_GROWTH allows the heap to grow if needed, if not present we'll abort on large allocations (obviously need to optimise/test/limit caches and such)
   set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -std=c++14 -s DISABLE_EXCEPTION_CATCHING=0 -s ALLOW_MEMORY_GROWTH=1" )
 
+  # Binding options
+  # See https://emscripten.org/docs/porting/connecting_cpp_and_javascript/embind.html#embind
+  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --bind" )
+
   # emscripten doesn't provide glm, fortunately it's header-only so we can just include the system version
   # TODO: This is hardcoded for now and points to another repo entirely, yay hacks!
   include_directories( "/home/gareth/source/junk/js-render-stuff/common/glm/" )
+  
 else()
+  set( INSTALL_BIN "bin" )
+  set( INSTALL_LIB "lib" )
+
   find_package( SDL2 REQUIRED )
   set( OpenGL_GL_PREFERENCE GLVND )
   find_package( OpenGL REQUIRED )
@@ -39,5 +52,13 @@ add_executable( ${PROJECT_NAME}
 
 if( NOT EMSCRIPTEN )
   target_link_libraries( ${PROJECT_NAME} ${SDL2_LIBRARIES} OpenGL::OpenGL )
+  install(TARGETS ${PROJECT_NAME}
+	  RUNTIME DESTINATION ${INSTALL_BIN}
+	  LIBRARY DESTINATION ${INSTALL_LIB}
+	  ARCHIVE DESTINATION ${INSTALL_LIB}
+  )
+else()
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.js DESTINATION ./)
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.wasm DESTINATION ./)
+  install(FILES ${PROJECT_SOURCE_DIR}/src/html/index.html DESTINATION ./)
 endif()
-
