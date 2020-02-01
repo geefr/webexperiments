@@ -9,6 +9,7 @@
 #endif
 
 #include <iostream>
+#include <fstream>
 #include <future>
 #include <thread>
 #include <chrono>
@@ -18,6 +19,7 @@
 #include <map>
 #include <vector>
 #include <regex>
+#include <experimental/filesystem>
 
 #include "glm/vec3.hpp"
 #include "glm/vec4.hpp"
@@ -60,6 +62,21 @@ struct FetchData {
 		emscripten::function("slider_colour_alpha", &webgltest_jshook_slider_colour_alpha);
   }
   
+  /**
+   * Get the base url of the page. Used when loading resources from the server.
+   * @return The base url of the page, utf8 encoded. The caller must call free() on the result.
+   */
+	EM_JS(char*, js_getWindowHref, (), {
+		var jsString = window.location.href;
+		if( jsString == null ) return null;
+		// 'jsString.length' would return the length of the string as UTF-16
+		// units, but Emscripten C strings operate as UTF-8.
+		var lengthBytes = lengthBytesUTF8(jsString)+1;
+		var stringOnWasmHeap = _malloc(lengthBytes);
+		stringToUTF8(jsString, stringOnWasmHeap, lengthBytes);
+		return stringOnWasmHeap;
+	});
+	
 #endif
 
 GLuint vertexBuffer, shaderProgram;
@@ -73,24 +90,6 @@ struct Vertex {
 	GLfloat z;
 };
 std::vector<Vertex> vertices;
-
-std::string shaderSource_Vertex = 
-"#version 300 es\n"
-"uniform mat4 mvp;\n"
-"in vec3 vertCoord;\n"
-"void main(void) { \n"
-"gl_Position = mvp * vec4(vertCoord, 1.0);\n"
-"}\n"
-"";
-
-std::string shaderSource_Fragment =
-"#version 300 es\n"
-"uniform mediump vec4 diffuseColour;\n"
-"out mediump vec4 fragColour;\n"
-"void main(void) {\n"
-"fragColour = diffuseColour;\n"
-"}\n"
-"";
 
 std::list<std::string> shapes;/* = {
   "110m_physical%2fne_110m_geography_regions_polys.shp",
@@ -131,7 +130,7 @@ void downloadProgress(emscripten_fetch_t* fetch) {
 }
 #endif
 
-void checkErrorCompileShader(GLint shader) {
+bool checkErrorCompileShader(GLint shader) {
 	GLint compileSuccess = 0;
 	glGetShaderiv(shader, GL_COMPILE_STATUS, &compileSuccess);
 	if( compileSuccess == GL_FALSE ) {
@@ -141,8 +140,81 @@ void checkErrorCompileShader(GLint shader) {
 		glGetShaderInfoLog(shader, logLength, &logLength, &log[0]);
 		glDeleteShader(shader);
 
-		std::cout << "Failed to link shader: " << std::string(reinterpret_cast<const char*>(&log[0])) << std::endl;		
+		std::cerr << "Failed to link shader: " << std::string(reinterpret_cast<const char*>(&log[0])) << std::endl;		
+		return false;
 	}
+	return true;
+}
+
+/**
+ * Load and compile a shader
+ * @param program Shader program to attach source to
+ * @param shader Path to shader source. Shader type will be determined by extension (.vert, .frag)
+ * @return Shader ID, or zero on error
+ */
+GLuint loadShader(std::string shader) {
+	std::filesystem::path p(shader);
+	
+#if defined(__EMSCRIPTEN__) && defined(TODO_MANAGED_TO_GET_EM_WGET_TO_WORK)
+  // TODO: This concept works, but emscripten_wget doesn't - will need some more compile flags and might not be possible due to browser restrictions
+  // If we don't have access to the file, try to load from the server hosting us
+	if( !std::filesystem::exists(p) ) {
+		auto hrefStr = js_getWindowHref();
+		if( hrefStr ) {
+			std::string shaderUrl = hrefStr;
+			std::free(hrefStr);
+						
+			std::regex reg(R"(^(([^:\/?#]+):)?(//([^\/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?)", std::regex::extended);
+			std::smatch sm;
+			if( std::regex_search(shaderUrl, sm, reg) && sm.size() >= 5 ) {
+				auto counter = 0;
+				for (const auto& res : sm) {
+					std::cout << counter++ << ": " << res << std::endl;
+				}
+				
+				shaderUrl = std::string(sm[1]) + "//" + std::string(sm[4]) + "/";
+			} else {
+				std::cerr << "loadShader: Failed to determine server base url" << std::endl;
+				return 0;
+			}
+			
+			shaderUrl += "/" + shader;
+			std::cerr << "loadShader: File not found, attempting to fetch from server: " << shaderUrl << " -> " << shader << std::endl;
+			emscripten_wget(shaderUrl.c_str(), shader.c_str());
+		} else {
+			std::cerr << "loadShader: Unable to fetch shader, failed to determine server base url" << std::endl;
+			return 0;
+		}
+	}
+#endif	
+	
+	GLenum shaderType;
+	if( p.extension().string() == ".vert" ) shaderType = GL_VERTEX_SHADER;
+	else if( p.extension().string() == ".frag" ) shaderType = GL_FRAGMENT_SHADER;
+	else { 
+		std::cerr << "loadShader: Unknown shader type: " << p.extension().string() << std::endl; 
+		return 0; 
+	}
+	
+	// if( std::filesystem::exists(p) ) std::cerr << "loadShader: Shader seems to exist: " << shader << std::endl;
+	std::ifstream shaderFile( shader );
+	if( !shaderFile.is_open() ) { 
+		std::cerr << "loadShader: Failed to find shader source: " << shader << std::endl;
+		return 0; 
+	}
+	
+	std::string buf( (std::istreambuf_iterator<char>(shaderFile)), std::istreambuf_iterator<char>());
+	auto result = glCreateShader(shaderType);
+	auto* bufP = buf.c_str();
+	glShaderSource(result, 1, &bufP, nullptr);
+	glCompileShader(result);
+	
+	if( !checkErrorCompileShader(result) ) {
+		glDeleteShader(result);
+		return 0;
+	}
+	
+	return result;
 }
 
 void initialiseGLData() {
@@ -158,7 +230,7 @@ void initialiseGLData() {
 	
 	glClearColor( 0.2f, 0.2f, 0.2f, 1.0f );
 	
-	// Vertex data TODO: Placeholder triangle
+	// Vertex data TODO: Placeholder
 	{
 		vertices = {			
 			{-1.0f,-1.0f,-1.0f},
@@ -205,21 +277,9 @@ void initialiseGLData() {
 	
 	// Shader program
 	{
-		auto vertShader = glCreateShader(GL_VERTEX_SHADER);
-		const char* vsource = shaderSource_Vertex.c_str();
-		glShaderSource(vertShader, 1, &vsource, nullptr);
-		glCompileShader(vertShader);
-		checkErrorCompileShader(vertShader);
-		
-		auto fragShader = glCreateShader(GL_FRAGMENT_SHADER);
-		const char* fsource = shaderSource_Fragment.c_str();
-		glShaderSource(fragShader, 1, &fsource, nullptr);
-		glCompileShader(fragShader);
-		checkErrorCompileShader(fragShader);
-		
 		shaderProgram = glCreateProgram();
-		glAttachShader(shaderProgram, vertShader);
-		glAttachShader(shaderProgram, fragShader);
+		glAttachShader(shaderProgram, loadShader("shaders/vertex/default.vert"));
+		glAttachShader(shaderProgram, loadShader("shaders/fragment/default.frag"));
 		glLinkProgram(shaderProgram);
 		
 		shaderAttribute_vertCoord = glGetAttribLocation(shaderProgram, "vertCoord");
@@ -364,7 +424,6 @@ void render() {
 
 
 int main(int argc, char** argv) {
-	
 	SDL_Init(SDL_INIT_VIDEO);
 	
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -400,9 +459,9 @@ int main(int argc, char** argv) {
 #else
   while( true ) {
 	  render();
+	  // TODO: Framerate throttling/vsync
   }
 #endif  
-
 
   // TODO: All the cleanup and stuff
   // SDL_Quit();
