@@ -26,7 +26,10 @@ class Geometry {
 		GLuint mShaderProgram = 0;
 		GLint mShaderUniform_mvp = 0;
 		GLint mShaderUniform_diffuseColour = 0;
-		GLint mShaderAttribute_vertCoord = 0;
+		
+		GLint mShaderAttribute_vertPosition = 0;
+		GLint mShaderAttribute_vertNormal = 0;
+		GLint mShaderAttribute_vertColour = 0;
 		
 		std::vector<Vertex> mVertices;
 		GLuint mNumVertices = 0;
