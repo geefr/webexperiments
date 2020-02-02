@@ -20,6 +20,7 @@
 #include <vector>
 #include <regex>
 #include <experimental/filesystem>
+#include <memory>
 
 #include "glm/vec3.hpp"
 #include "glm/vec4.hpp"
@@ -27,19 +28,10 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
 
-SDL_Window* window = nullptr;
-GLfloat windowWidth = 800;
-GLfloat windowHeight = 600;
-SDL_Surface *screen = nullptr;
-static SDL_GLContext gl_context;
+#include "renderer.h"
 
-glm::vec4 diffuseColour(1.f,1.f,1.f,1.f);
-
-glm::vec3 viewRot(1.0f);
-glm::vec3 viewRotDelta(0.5f,0.7f,1.0f);
-
-std::chrono::time_point<std::chrono::high_resolution_clock> startTime;
-std::chrono::time_point<std::chrono::high_resolution_clock> lastFrameTime;
+std::unique_ptr<Renderer> renderer;
+std::shared_ptr<Geometry> geometry;
 
 struct FetchData {
 	std::string data;
@@ -50,10 +42,10 @@ struct FetchData {
   std::map<emscripten_fetch_t*, FetchData> currentFetches;
   
   // Function hooks to javascript
-	void webgltest_jshook_slider_colour_red( int v ) { diffuseColour.r = static_cast<float>(v) / 255.f; }
-	void webgltest_jshook_slider_colour_green( int v ) { diffuseColour.g = static_cast<float>(v) / 255.f; }
-	void webgltest_jshook_slider_colour_blue( int v ) { diffuseColour.b = static_cast<float>(v) / 255.f; }
-	void webgltest_jshook_slider_colour_alpha( int v ) { diffuseColour.a = static_cast<float>(v) / 255.f; }
+	void webgltest_jshook_slider_colour_red( int v ) { geometry->diffuseColour().r = static_cast<float>(v) / 255.f; }
+	void webgltest_jshook_slider_colour_green( int v ) { geometry->diffuseColour().g = static_cast<float>(v) / 255.f; }
+	void webgltest_jshook_slider_colour_blue( int v ) { geometry->diffuseColour().b = static_cast<float>(v) / 255.f; }
+	void webgltest_jshook_slider_colour_alpha( int v ) { geometry->diffuseColour().a = static_cast<float>(v) / 255.f; }
 	
   EMSCRIPTEN_BINDINGS(webGLTest) {
 		emscripten::function("slider_colour_red", &webgltest_jshook_slider_colour_red);
@@ -78,18 +70,6 @@ struct FetchData {
 	});
 	
 #endif
-
-GLuint vertexBuffer, shaderProgram;
-GLint shaderAttribute_vertCoord;
-GLint shaderUniform_mvp;
-GLint shaderUniform_diffuseColour;
-
-struct Vertex {
-	GLfloat x;
-	GLfloat y;
-	GLfloat z;
-};
-std::vector<Vertex> vertices;
 
 std::list<std::string> shapes;/* = {
   "110m_physical%2fne_110m_geography_regions_polys.shp",
@@ -130,181 +110,15 @@ void downloadProgress(emscripten_fetch_t* fetch) {
 }
 #endif
 
-bool checkErrorCompileShader(GLint shader) {
-	GLint compileSuccess = 0;
-	glGetShaderiv(shader, GL_COMPILE_STATUS, &compileSuccess);
-	if( compileSuccess == GL_FALSE ) {
-		GLint logLength = 0;
-		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &logLength);
-		std::vector<GLchar> log(static_cast<std::vector<GLchar>::size_type>(logLength));
-		glGetShaderInfoLog(shader, logLength, &logLength, &log[0]);
-		glDeleteShader(shader);
-
-		std::cerr << "Failed to link shader: " << std::string(reinterpret_cast<const char*>(&log[0])) << std::endl;		
-		return false;
-	}
-	return true;
-}
-
-/**
- * Load and compile a shader
- * @param program Shader program to attach source to
- * @param shader Path to shader source. Shader type will be determined by extension (.vert, .frag)
- * @return Shader ID, or zero on error
- */
-GLuint loadShader(std::string shader) {
-	std::filesystem::path p(shader);
-	
-#if defined(__EMSCRIPTEN__) && defined(TODO_MANAGED_TO_GET_EM_WGET_TO_WORK)
-  // TODO: This concept works, but emscripten_wget doesn't - will need some more compile flags and might not be possible due to browser restrictions
-  // If we don't have access to the file, try to load from the server hosting us
-	if( !std::filesystem::exists(p) ) {
-		auto hrefStr = js_getWindowHref();
-		if( hrefStr ) {
-			std::string shaderUrl = hrefStr;
-			std::free(hrefStr);
-						
-			std::regex reg(R"(^(([^:\/?#]+):)?(//([^\/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?)", std::regex::extended);
-			std::smatch sm;
-			if( std::regex_search(shaderUrl, sm, reg) && sm.size() >= 5 ) {
-				auto counter = 0;
-				for (const auto& res : sm) {
-					std::cout << counter++ << ": " << res << std::endl;
-				}
-				
-				shaderUrl = std::string(sm[1]) + "//" + std::string(sm[4]) + "/";
-			} else {
-				std::cerr << "loadShader: Failed to determine server base url" << std::endl;
-				return 0;
-			}
-			
-			shaderUrl += "/" + shader;
-			std::cerr << "loadShader: File not found, attempting to fetch from server: " << shaderUrl << " -> " << shader << std::endl;
-			emscripten_wget(shaderUrl.c_str(), shader.c_str());
-		} else {
-			std::cerr << "loadShader: Unable to fetch shader, failed to determine server base url" << std::endl;
-			return 0;
-		}
-	}
-#endif	
-	
-	GLenum shaderType;
-	if( p.extension().string() == ".vert" ) shaderType = GL_VERTEX_SHADER;
-	else if( p.extension().string() == ".frag" ) shaderType = GL_FRAGMENT_SHADER;
-	else { 
-		std::cerr << "loadShader: Unknown shader type: " << p.extension().string() << std::endl; 
-		return 0; 
-	}
-	
-	// if( std::filesystem::exists(p) ) std::cerr << "loadShader: Shader seems to exist: " << shader << std::endl;
-	std::ifstream shaderFile( shader );
-	if( !shaderFile.is_open() ) { 
-		std::cerr << "loadShader: Failed to find shader source: " << shader << std::endl;
-		return 0; 
-	}
-	
-	std::string buf( (std::istreambuf_iterator<char>(shaderFile)), std::istreambuf_iterator<char>());
-	auto result = glCreateShader(shaderType);
-	auto* bufP = buf.c_str();
-	glShaderSource(result, 1, &bufP, nullptr);
-	glCompileShader(result);
-	
-	if( !checkErrorCompileShader(result) ) {
-		glDeleteShader(result);
-		return 0;
-	}
-	
-	return result;
-}
-
-void initialiseGLData() {
-	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LESS);
-	
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	
-	glEnable(GL_CULL_FACE);
-	glFrontFace(GL_CCW);
-	glCullFace(GL_BACK);
-	
-	glClearColor( 0.2f, 0.2f, 0.2f, 1.0f );
-	
-	// Vertex data TODO: Placeholder
-	{
-		vertices = {			
-			{-1.0f,-1.0f,-1.0f},
-			{-1.0f,-1.0f, 1.0f},
-			{-1.0f, 1.0f, 1.0f},
-			{1.0f, 1.0f,-1.0f},
-			{-1.0f,-1.0f,-1.0f},
-			{-1.0f, 1.0f,-1.0f},
-			{1.0f,-1.0f, 1.0f},
-			{-1.0f,-1.0f,-1.0f},
-			{1.0f,-1.0f,-1.0f},
-			{1.0f, 1.0f,-1.0f},
-			{1.0f,-1.0f,-1.0f},
-			{-1.0f,-1.0f,-1.0f},
-			{-1.0f,-1.0f,-1.0f},
-			{-1.0f, 1.0f, 1.0f},
-			{-1.0f, 1.0f,-1.0f},
-			{1.0f,-1.0f, 1.0f},
-			{-1.0f,-1.0f, 1.0f},
-			{-1.0f,-1.0f,-1.0f},
-			{-1.0f, 1.0f, 1.0f},
-			{-1.0f,-1.0f, 1.0f},
-			{1.0f,-1.0f, 1.0f},
-			{1.0f, 1.0f, 1.0f},
-			{1.0f,-1.0f,-1.0f},
-			{1.0f, 1.0f,-1.0f},
-			{1.0f,-1.0f,-1.0f},
-			{1.0f, 1.0f, 1.0f},
-			{1.0f,-1.0f, 1.0f},
-			{1.0f, 1.0f, 1.0f},
-			{1.0f, 1.0f,-1.0f},
-			{-1.0f, 1.0f,-1.0f},
-			{1.0f, 1.0f, 1.0f},
-			{-1.0f, 1.0f,-1.0f},
-			{-1.0f, 1.0f, 1.0f},
-			{1.0f, 1.0f, 1.0f},
-			{-1.0f, 1.0f, 1.0f},
-			{1.0f,-1.0f, 1.0f},
-		};
-		glGenBuffers(1, &vertexBuffer);
-		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-		glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(vertices.size() * sizeof(Vertex)), vertices.data(), GL_STATIC_DRAW);
-	}
-	
-	// Shader program
-	{
-		shaderProgram = glCreateProgram();
-		glAttachShader(shaderProgram, loadShader("shaders/vertex/default.vert"));
-		glAttachShader(shaderProgram, loadShader("shaders/fragment/default.frag"));
-		glLinkProgram(shaderProgram);
-		
-		shaderAttribute_vertCoord = glGetAttribLocation(shaderProgram, "vertCoord");
-		glEnableVertexAttribArray(shaderAttribute_vertCoord);
-		glVertexAttribPointer(shaderAttribute_vertCoord, 3, GL_FLOAT, false, sizeof(Vertex), static_cast<const void*>(0));
-    
-    shaderUniform_mvp = glGetUniformLocation(shaderProgram, "mvp");
-    shaderUniform_diffuseColour = glGetUniformLocation(shaderProgram, "diffuseColour");
-	}
-}
-
 #ifndef __EMSCRIPTEN
 void endApplication() {
-  SDL_DestroyWindow(window);
+  SDL_DestroyWindow(renderer->window());
   SDL_Quit();
   std::exit(0);
 }
 #endif
 
 void render() {
-	auto now = std::chrono::high_resolution_clock::now();
-	
-	float renderDelta = static_cast<float>(std::chrono::duration_cast<std::chrono::microseconds>(now - lastFrameTime).count()) / 1e6f;
-	lastFrameTime = now;
-	
 #ifndef __EMSCRIPTEN__
   // Get the next event
   SDL_Event event;
@@ -316,34 +130,10 @@ void render() {
     }
   }
 #endif
-  
-  viewRot += renderDelta * viewRotDelta;
-  if( viewRot.x > 2 * 3.14 ) viewRot.x = 0.0f;
-  if( viewRot.y > 2 * 3.14 ) viewRot.y = 0.0f;
-  if( viewRot.z > 2 * 3.14 ) viewRot.z = 0.0f;
-  
-  // glm::mat4 projMat = glm::ortho( -180.0f, 180.0f, -90.0f, 90.0f, 1.f, -1.f );
-  glm::mat4 projMat = glm::perspective( 90.0f, static_cast<GLfloat>(windowWidth) / static_cast<GLfloat>(windowHeight), 0.1f, 100.0f );
-  glm::mat4 viewMat = glm::lookAt( glm::vec3(0.0, 0.0, 2.0), glm::vec3(0.0,0.0,0.0), glm::vec3(0.0,1.0,0.0) );
-  viewMat = glm::rotate( viewMat, viewRot.x, glm::vec3(1.0, 0.0, 0.0) );
-  viewMat = glm::rotate( viewMat, viewRot.y, glm::vec3(0.0, 1.0, 0.0) );
-  viewMat = glm::rotate( viewMat, viewRot.z, glm::vec3(0.0, 0.0, 1.0) );
-  auto mvp = projMat * viewMat /* * modelMat */; 
-  
-  SDL_GL_MakeCurrent(window, gl_context);
-  
-  glViewport(0,0,windowWidth,windowHeight);
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  
-  glUseProgram(shaderProgram);
-  glUniformMatrix4fv(shaderUniform_mvp, 1, GL_FALSE, glm::value_ptr(mvp));
-  glUniform4fv(shaderUniform_diffuseColour, 1, glm::value_ptr(diffuseColour));
-  
-  glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-  glDrawArrays(GL_TRIANGLES, 0, vertices.size());
-  
-  SDL_GL_SwapWindow(window);
 
+	renderer->render();
+
+/*
 #ifdef __EMSCRIPTEN__
 	auto it = currentFetches.begin();
 	while( it != currentFetches.end() ) {
@@ -351,7 +141,7 @@ void render() {
 		auto& fetchData = it->second;
 		
 		if( !fetchData.ready ) { ++it; continue; }
-		/*
+		
 		// Specifies the readyState of the XHR request:
         // 0: UNSENT: request not sent yet
         // 1: OPENED: emscripten_fetch has been called.
@@ -359,8 +149,8 @@ void render() {
         // 3: LOADING: download in progress.
         // 4: DONE: download finished.
         // See https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/readyState
-		if (fetchOp->readyState != 4) { ++it; continue; }
-		*/
+		//if (fetchOp->readyState != 4) { ++it; continue; }
+		
 		if (fetchOp->status == 200) {
 			printf("Finished downloading %llu bytes from URL %s.\n", fetchOp->numBytes, fetchOp->url);
 			// The data is now available at fetch->data[0] through fetch->data[fetch->numBytes-1];
@@ -419,15 +209,15 @@ void render() {
 		url.append(currentShape);	
 		currentFetches[ emscripten_fetch(&attr, url.c_str())] = {};
 	}
-#endif
+#endif */
 }
 
 
 int main(int argc, char** argv) {
-	SDL_Init(SDL_INIT_VIDEO);
-	
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+  SDL_Init(SDL_INIT_VIDEO);
+
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 	
   // SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
@@ -438,19 +228,14 @@ int main(int argc, char** argv) {
   SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
 #endif
 
-  SDL_Renderer* renderer = nullptr;
-  SDL_CreateWindowAndRenderer(windowWidth, windowHeight, SDL_WINDOW_OPENGL, &window, &renderer);
+  renderer.reset(new Renderer(800, 600));
 
-  gl_context = SDL_GL_CreateContext(window);
-  
-	auto glVer = glGetString(GL_VERSION);
-	std::cout << "OpenGL initialised: " << glVer << std::endl;
-  
   if( !shapes.empty() ) currentShape = *shapes.begin();
 
-  initialiseGLData();
+  geometry.reset(new Geometry());
+  renderer->geometry().push_back(geometry);
 
-	startTime = std::chrono::high_resolution_clock::now();
+  renderer->initialiseGLData();
 
 // Fire the main loop. Won't quit this until SDL does in some form
 #ifdef __EMSCRIPTEN__
@@ -458,7 +243,7 @@ int main(int argc, char** argv) {
   emscripten_set_main_loop(render, 60, 1);
 #else
   while( true ) {
-	  render();
+	  renderer->render();
 	  // TODO: Framerate throttling/vsync
   }
 #endif  

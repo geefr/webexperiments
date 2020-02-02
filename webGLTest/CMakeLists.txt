@@ -1,16 +1,27 @@
 cmake_minimum_required(VERSION 3.10)
 project( webGLTest )
 
-set( CMAKE_CXX_STANDARD 17 )
+set( CMAKE_CXX_STANDARD 17 ) 
+
+if( CMAKE_COMPILER_IS_GNUCC )
+  if( CMAKE_CXX_COMPILER_VERSION VERSION_LESS 8 )
+    # Can't get std::filesystem working on gcc 7, so just require 8
+		message(FATAL_ERROR "Compiling under GCC requires gcc 8 or higher")
+	else()
+	  # Compiling with gcc, so need a library to get std::filesystem
+	  set( EXTRA_SYSTEM_LIBS "stdc++fs" )
+	endif()
+endif()
 
 if( CMAKE_SYSTEM_NAME MATCHES "Emscripten" )
   set( EMSCRIPTEN TRUE )
 endif()
 
-if( EMSCRIPTEN )
-  set( INSTALL_BIN "" )
-  set( INSTALL_LIB "" )
-  
+set( INSTALL_BIN "./" )
+set( INSTALL_LIB "./" )
+set( INSTALL_DATA "./" )
+
+if( EMSCRIPTEN )  
   # Fetch options
   # enable fetches, enable waitable fetches on all threads
   # PTHREADS support requires SharedArrayBuffer support in browser. Disabled in many as of ~Sep 2019 due to Spectre vulns
@@ -36,11 +47,7 @@ if( EMSCRIPTEN )
   # emscripten doesn't provide glm, fortunately it's header-only so we can just include the system version
   # TODO: This is hardcoded for now and points to another repo entirely, yay hacks!
   include_directories( "/home/gareth/source/junk/js-render-stuff/common/glm/" )
-  
 else()
-  set( INSTALL_BIN "bin" )
-  set( INSTALL_LIB "lib" )
-
   find_package( SDL2 REQUIRED )
   set( OpenGL_GL_PREFERENCE GLVND )
   find_package( OpenGL REQUIRED )
@@ -50,7 +57,10 @@ endif()
 
 add_executable( ${PROJECT_NAME}
 	src/main.cpp
+	src/geometry.cpp
+	src/renderer.cpp
 	)
+target_link_libraries( ${PROJECT_NAME} ${EXTRA_SYSTEM_LIBS} )
 
 if( NOT EMSCRIPTEN )
   target_link_libraries( ${PROJECT_NAME} ${SDL2_LIBRARIES} OpenGL::OpenGL )
@@ -59,9 +69,11 @@ if( NOT EMSCRIPTEN )
 	  LIBRARY DESTINATION ${INSTALL_LIB}
 	  ARCHIVE DESTINATION ${INSTALL_LIB}
   )
+  install(DIRECTORY ${PROJECT_SOURCE_DIR}/src/shaders DESTINATION ${INSTALL_DATA})
 else()
   install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.js DESTINATION ./)
   install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.wasm DESTINATION ./)
-  install(FILES ${PROJECT_SOURCE_DIR}/src/html/index.html DESTINATION ./)
-  # install(DIRECTORY ${PROJECT_SOURCE_DIR}/src/shaders DESTINATION ./)
+  install(FILES ${PROJECT_SOURCE_DIR}/src/html/index.html DESTINATION ${INSTALL_DATA})
 endif()
+
+
