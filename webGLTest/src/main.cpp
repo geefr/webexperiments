@@ -243,7 +243,7 @@ int main(int argc, char** argv) {
   emscripten_set_main_loop(render, 60, 1);
 #else
   while( true ) {
-	  renderer->render();
+	  render();
 	  // TODO: Framerate throttling/vsync
   }
 #endif  
