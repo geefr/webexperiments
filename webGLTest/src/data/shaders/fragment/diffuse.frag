@@ -13,9 +13,9 @@ uniform vec4 diffuseColour;
 uniform bool diffuseTexturePresent;
 uniform sampler2D diffuseTexture;
 
-in vec3 vertPosition;
-in vec3 vertNormal;
-in vec2 vertTexCoord;
+in vec3 fragPosition;
+in vec3 fragNormal;
+in vec2 fragTexCoord;
 
 out highp vec4 fragColour;
 
@@ -23,7 +23,7 @@ void main(void) {
   fragColour = diffuseColour;
   // Yeah! If statements!
   if( diffuseTexturePresent ) {
-		vec4 texColour = texture(diffuseTexture, vertTexCoord);
+		vec4 texColour = texture(diffuseTexture, fragTexCoord);
 		fragColour = vec4(texColour.rgb, 1.0);
 	}
 }
