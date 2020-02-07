@@ -110,7 +110,7 @@ void Renderer::initialiseGLData() {
 	glFrontFace(GL_CCW);
 	glCullFace(GL_BACK);
 
-	glClearColor( 0.2f, 0.2f, 0.2f, 1.0f );
+	glClearColor( 0.1f, 0.1f, 0.1f, 1.0f );
 	
   //std::cerr << "Renderer::initialising shaders" << std::endl;
   for( auto& s : mShaders ) {
@@ -133,7 +133,7 @@ void Renderer::render() {
 	
 	float renderDelta = static_cast<float>(std::chrono::duration_cast<std::chrono::microseconds>(now - mLastFrameTime).count()) / 1e6f;
 	mLastFrameTime = now;
-	  
+
   mViewRot += renderDelta * mViewRotDelta;
   if( mViewRot.x > 2 * 3.14 ) mViewRot.x = 0.0f;
   if( mViewRot.y > 2 * 3.14 ) mViewRot.y = 0.0f;
@@ -154,7 +154,7 @@ void Renderer::render() {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   
   for( auto& g : mGeometry ) {
-		g->render(this, projMat, viewMat);
+		g->render(this, renderDelta, projMat, viewMat);
 	}
 	
   SDL_GL_SwapWindow(mWindow);

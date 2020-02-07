@@ -5,76 +5,7 @@
 #include <string>
 #include <iostream>
 
-std::vector<Vertex> cube = {
-	// bottom
-	{{-1.0f,-1.0f,-1.0f}, {0.0f,-1.0f,0.0f}, {0.0f,0.0f}},
-	{{-1.0f,-1.0f, 1.0f}, {0.0f,-1.0f,0.0f}, {1.0f,1.0f}},
-	{{-1.0f, 1.0f, 1.0f}, {0.0f,-1.0f,0.0f}, {0.0f,0.0f}},
-	{{1.0f, 1.0f,-1.0f}, {0.0f,-1.0f,0.0f}, {0.0f,0.0f}},
-	{{-1.0f,-1.0f,-1.0f}, {0.0f,-1.0f,0.0f}, {1.0f,1.0f}},
-	{{-1.0f, 1.0f,-1.0f}, {0.0f,-1.0f,0.0f}, {0.0f,0.0f}},
-	
-	// top
-	{{1.0f,-1.0f, 1.0f}, {0.0f,1.0f,0.0f}, {0.0f,0.0f}},
-	{{-1.0f,-1.0f,-1.0f}, {0.0f,1.0f,0.0f}, {1.0f,1.0f}},
-	{{1.0f,-1.0f,-1.0f}, {0.0f,1.0f,0.0f}, {0.0f,0.0f}},
-	{{1.0f, 1.0f,-1.0f}, {0.0f,1.0f,0.0f}, {0.0f,0.0f}},
-	{{1.0f,-1.0f,-1.0f}, {0.0f,1.0f,0.0f}, {0.0f,0.0f}},
-	{{-1.0f,-1.0f,-1.0f}, {0.0f,1.0f,0.0f}, {0.0f,0.0f}},
-	
-	// left
-	{{-1.0f,-1.0f,-1.0f}, {-1.0f,0.0f,0.0f}, {0.0f,0.0f}},
-	{{-1.0f, 1.0f, 1.0f}, {-1.0f,0.0f,0.0f}, {0.0f,0.0f}},
-	{{-1.0f, 1.0f,-1.0f}, {-1.0f,0.0f,0.0f}, {0.0f,0.0f}},
-	{{1.0f,-1.0f, 1.0f}, {-1.0f,0.0f,0.0f}, {0.0f,0.0f}},
-	{{-1.0f,-1.0f, 1.0f}, {-1.0f,0.0f,0.0f}, {0.0f,0.0f}},
-	{{-1.0f,-1.0f,-1.0f}, {-1.0f,0.0f,0.0f}, {0.0f,0.0f}},
-	
-	// right
-	{{-1.0f, 1.0f, 1.0f}, {1.0f,0.0f,0.0f}, {0.0f,0.0f}},
-	{{-1.0f,-1.0f, 1.0f}, {1.0f,0.0f,0.0f}, {0.0f,0.0f}},
-	{{1.0f,-1.0f, 1.0f}, {1.0f,0.0f,0.0f}, {0.0f,0.0f}},
-	{{1.0f, 1.0f, 1.0f}, {1.0f,0.0f,0.0f}, {0.0f,0.0f}},
-	{{1.0f,-1.0f,-1.0f}, {1.0f,0.0f,0.0f}, {0.0f,0.0f}},
-	{{1.0f, 1.0f,-1.0f}, {1.0f,0.0f,0.0f}, {0.0f,0.0f}},
-	
-	// front
-	{{1.0f,-1.0f,-1.0f}, {0.0f,0.0f,1.0f}, {0.0f,0.0f}},
-	{{1.0f, 1.0f, 1.0f}, {0.0f,0.0f,1.0f}, {0.0f,0.0f}},
-	{{1.0f,-1.0f, 1.0f}, {0.0f,0.0f,1.0f}, {0.0f,0.0f}},
-	{{1.0f, 1.0f, 1.0f}, {0.0f,0.0f,1.0f}, {0.0f,0.0f}},
-	{{1.0f, 1.0f,-1.0f}, {0.0f,0.0f,1.0f}, {0.0f,0.0f}},
-	{{-1.0f, 1.0f,-1.0f}, {0.0f,0.0f,1.0f}, {0.0f,0.0f}},
-	
-	// back
-	{{1.0f, 1.0f, 1.0f}, {0.0f,0.0f,-1.0f}, {0.0f,0.0f}},
-	{{-1.0f, 1.0f,-1.0f}, {0.0f,0.0f,-1.0f}, {0.0f,0.0f}},
-	{{-1.0f, 1.0f, 1.0f}, {0.0f,0.0f,-1.0f}, {0.0f,0.0f}},
-	{{1.0f, 1.0f, 1.0f}, {0.0f,0.0f,-1.0f}, {0.0f,0.0f}},
-	{{-1.0f, 1.0f, 1.0f}, {0.0f,0.0f,-1.0f}, {0.0f,0.0f}},
-	{{1.0f,-1.0f, 1.0f}, {0.0f,0.0f,-1.0f}, {0.0f,0.0f}},
-};
-	
-std::vector<Vertex> triangle = {
-	{{-1.0f,-1.0f, 0.0f}, {0.0f,0.0f,1.0f}, {0.0f,0.0f}},
-	{{ 1.0f,-1.0f, 0.0f}, {0.0f,0.0f,1.0f}, {1.0f,0.0f}},
-	{{ 0.0f, 1.0f, 0.0f}, {0.0f,0.0f,1.0f}, {0.5f,1.0f}},
-};
-	
-std::vector<Vertex> quad = {
-	{{-1.0f,-1.0f, 0.0f}, {0.0f,0.0f,1.0f}, {0.0f,0.0f}},
-	{{ 1.0f,-1.0f, 0.0f}, {0.0f,0.0f,1.0f}, {1.0f,0.0f}},
-	{{ 1.0f, 1.0f, 0.0f}, {0.0f,0.0f,1.0f}, {1.0f,1.0f}},
-	
-	{{ 1.0f, 1.0f, 0.0f}, {0.0f,0.0f,1.0f}, {1.0f,1.0f}},
-	{{-1.0f, 1.0f, 0.0f}, {0.0f,0.0f,1.0f}, {0.0f,1.0f}},
-	{{-1.0f,-1.0f, 0.0f}, {0.0f,0.0f,1.0f}, {0.0f,0.0f}},
-};
-
-Geometry::Geometry() {
-	// TODO: Placeholder goemetry
-	// mVertices = quad;
-}
+Geometry::Geometry() : mModelMat(1.0f) {}
 
 Geometry::~Geometry() {
 	glDeleteVertexArrays(1, &mVAO);
@@ -98,12 +29,20 @@ void Geometry::initialiseGLData() {
   mShaderProgram->initialiseVertexAttribs();
 }
 
-void Geometry::render( Renderer* renderer, glm::mat4 projMat, glm::mat4 viewMat ) {
+void Geometry::render( Renderer* renderer, float renderDelta, glm::mat4 projMat, glm::mat4 viewMat ) {
 	glBindVertexArray(mVAO);
 	
-  glm::mat4 modelMat(1.0f);
+	mModelRot += renderDelta * mModelRotDelta;
+  if( mModelRot.x > 2 * M_PI ) mModelRot.x = 0.0f;
+  if( mModelRot.y > 2 * M_PI ) mModelRot.y = 0.0f;
+  if( mModelRot.z > 2 * M_PI ) mModelRot.z = 0.0f;
   
-  mShaderProgram->modelMatrix( modelMat );
+	mModelMat = glm::mat4x4(1.0f);
+  mModelMat = glm::rotate( mModelMat, mModelRot.x, glm::vec3(1.0, 0.0, 0.0) );
+  mModelMat = glm::rotate( mModelMat, mModelRot.y, glm::vec3(0.0, 1.0, 0.0) );
+  mModelMat = glm::rotate( mModelMat, mModelRot.z, glm::vec3(0.0, 0.0, 1.0) );
+	
+  mShaderProgram->modelMatrix( mModelMat );
   mShaderProgram->viewMatrix( viewMat );
   mShaderProgram->projMatrix( projMat );
   

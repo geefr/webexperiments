@@ -26,7 +26,7 @@ struct Light {
   float falloff;
   float radius;
 };
-uniform int numLights;
+uniform mediump int numLights;
 uniform Light lights[10];
 
 //uniform bool useDiffuseShader;
@@ -48,6 +48,7 @@ void main(void) {
   fragTexCoord = vertTexCoord;
   gl_Position = projMatrix * vertViewPosition;
   
+  // TODO: Performance: Calculate normal matrix on cpu instead of per-vertex
   mat3 normalMatrix  = transpose(inverse(mat3(modelViewMatrix)));
   fragNormal = normalize(normalMatrix * vertNormal);
 }

@@ -327,13 +327,13 @@ int main(int argc, char** argv) {
 
   shaderDiffuse.reset(new Shader_diffuse());
   Light testLight1;
-  testLight1.position = {1.0f,0.5f,0.2f};
-  testLight1.colour = {0.5f,0.5f,0.5f};
+  testLight1.position = {3.0f,3.0f,3.0f};
+  testLight1.colour = {0.8f,0.5f,0.5f};
   testLight1.intensity = {0.1f,1.0f,0.4f};
   testLight1.falloff = 100.0f;
   testLight1.radius = 10.0f;
   shaderDiffuse->lights().emplace_back( testLight1 );
-  
+    
   renderer->shaders()["diffuse"] = shaderDiffuse;
   
   nullDiffuse.reset(new Texture_SDL2Image("data/textures/diffuse/null.png"));
@@ -342,7 +342,7 @@ int main(int argc, char** argv) {
   //geometry.reset(new Geometry());
   geometry.reset(new ObjModel("data/models/primitives/cube/cube.obj"));
   geometry->shader(shaderDiffuse);
-  geometry->textures().diffuse = nullDiffuse;
+  // geometry->textures().diffuse = nullDiffuse;
   renderer->geometry().push_back(geometry);
 
   // Upload data to gpu, init etc

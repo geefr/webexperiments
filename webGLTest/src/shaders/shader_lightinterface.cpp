@@ -38,7 +38,6 @@ void Shader_lightinterface::bind() {
 	Shader::bind();
 	
 	glUniform1i(mShaderUniform_numLights, mLights.size());
-	
 	for( auto i = 0; i < mLights.size(); ++i ) {
 		glUniform3fv(mShaderUniform_lights[i].position, 1, glm::value_ptr(mLights[i].position));
 		glUniform3fv(mShaderUniform_lights[i].colour, 1, glm::value_ptr(mLights[i].colour));

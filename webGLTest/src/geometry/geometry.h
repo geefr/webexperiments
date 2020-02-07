@@ -19,7 +19,7 @@ class Geometry {
 		
 		void initialiseGLData();
 		
-		void render( Renderer* renderer, glm::mat4 projMat, glm::mat4 viewMat );
+		void render( Renderer* renderer, float renderDelta, glm::mat4 projMat, glm::mat4 viewMat );
 		
 		glm::vec4& diffuseColour();
 		TextureSet& textures();
@@ -27,6 +27,10 @@ class Geometry {
 	
 	protected:
 		Geometry();
+		
+		glm::mat4x4 mModelMat;
+		glm::vec3 mModelRot = {0.0f,0.0f,0.0f};
+		glm::vec3 mModelRotDelta = {0.25f,0.35f,0.5f};
 		
 	  std::shared_ptr<Shader> mShaderProgram;
 	

@@ -55,10 +55,10 @@ class Renderer {
 		
 		glm::vec4 mDiffuseColour = {1.f,1.f,1.f,1.f};
 		glm::vec3 mViewRot = {0.f,0.f,0.f};
-		glm::vec3 mViewPos = {0.f,0.f,2.f};
+		glm::vec3 mViewPos = {0.f,0.f,3.f};
 		
-		glm::vec3 mViewRotDelta = {0.5f,0.7f,1.0f};
-		//glm::vec3 mViewRotDelta = {0.0f,0.0f,0.0f};
+		//glm::vec3 mViewRotDelta = {0.25f,0.35f,0.5f};
+		glm::vec3 mViewRotDelta = {0.0f,0.0f,0.0f};
 		glm::vec3 mViewPosDelta = {0.0f,0.0f,0.0f};
 		
 		std::chrono::time_point<std::chrono::high_resolution_clock> mStartTime;
