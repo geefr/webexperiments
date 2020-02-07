@@ -11,6 +11,12 @@ struct Vertex {
 	glm::vec3 p; // Position
 	glm::vec3 n; // Normal
 	glm::vec2 t; // Texture coord
+	
+	bool operator==(const Vertex& v) { 
+		return p == v.p &&
+		       n == v.n &&
+		       t == v.t;
+	}
 };
 
 #endif

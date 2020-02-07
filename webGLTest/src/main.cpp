@@ -37,6 +37,7 @@
 
 #include "renderer.h"
 #include "textures/texture_sdl2image.h"
+#include "geometry/objmodel.h"
 
 std::unique_ptr<Renderer> renderer;
 std::shared_ptr<Geometry> geometry;
@@ -325,12 +326,13 @@ int main(int argc, char** argv) {
   if( !shapes.empty() ) currentShape = *shapes.begin();
 
   shaderDiffuse.reset(new Shader_diffuse());
-  renderer->shaders().push_back(shaderDiffuse);
+  renderer->shaders()["diffuse"] = shaderDiffuse;
   
   nullDiffuse.reset(new Texture_SDL2Image("data/textures/diffuse/null.png"));
-  renderer->textures().push_back(nullDiffuse);
+  renderer->textures()["null"] = nullDiffuse;
   
-  geometry.reset(new Geometry());
+  //geometry.reset(new Geometry());
+  geometry.reset(new ObjModel("data/models/primitives/cube/cube.obj"));
   geometry->shader(shaderDiffuse);
   geometry->textures().diffuse = nullDiffuse;
   renderer->geometry().push_back(geometry);

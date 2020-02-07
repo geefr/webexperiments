@@ -73,8 +73,7 @@ std::vector<Vertex> quad = {
 
 Geometry::Geometry() {
 	// TODO: Placeholder goemetry
-	mVertices = quad;
-	mNumVertices = mVertices.size();
+	// mVertices = quad;
 }
 
 Geometry::~Geometry() {
@@ -88,6 +87,7 @@ void Geometry::initialiseGLData() {
 	glBindVertexArray(mVAO);
 	
   // Upload the vertex data
+  mNumVertices = mVertices.size();
 	glGenBuffers(1, &mVertexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, mVertexBuffer);
 	glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(mVertices.size() * sizeof(Vertex)), mVertices.data(), GL_STATIC_DRAW);

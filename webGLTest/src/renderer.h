@@ -1,7 +1,7 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
-#include "geometry.h"
+#include "geometry/geometry.h"
 #include "shaders/shader.h"
 #include "textures/textureset.h"
 
@@ -16,6 +16,7 @@
 
 #include <chrono>
 #include <vector>
+#include <map>
 #include <memory>
 
 class Renderer {
@@ -40,8 +41,8 @@ class Renderer {
     SDL_Surface* surface() const;
     SDL_GLContext context() const;
     
-    std::vector<std::shared_ptr<Shader>>& shaders();
-    std::vector<std::shared_ptr<Texture>>& textures();
+    std::map<std::string, std::shared_ptr<Shader>>& shaders();
+    std::map<std::string, std::shared_ptr<Texture>>& textures();
     std::vector<std::shared_ptr<Geometry>>& geometry();
     
 	private:
@@ -56,15 +57,15 @@ class Renderer {
 		glm::vec3 mViewRot = {0.f,0.f,0.f};
 		glm::vec3 mViewPos = {0.f,0.f,2.f};
 		
-		//glm::vec3 mViewRotDelta = {0.5f,0.7f,1.0f};
-		 glm::vec3 mViewRotDelta = {0.0f,0.0f,0.0f};
+		glm::vec3 mViewRotDelta = {0.5f,0.7f,1.0f};
+		//glm::vec3 mViewRotDelta = {0.0f,0.0f,0.0f};
 		glm::vec3 mViewPosDelta = {0.f,0.f,-0.01f};
 		
 		std::chrono::time_point<std::chrono::high_resolution_clock> mStartTime;
 		std::chrono::time_point<std::chrono::high_resolution_clock> mLastFrameTime;
 		
-    std::vector<std::shared_ptr<Shader>> mShaders;
-		std::vector<std::shared_ptr<Texture>> mTextures;
+    std::map<std::string, std::shared_ptr<Shader>> mShaders;
+		std::map<std::string, std::shared_ptr<Texture>> mTextures;
 		std::vector<std::shared_ptr<Geometry>> mGeometry;
 };
 

@@ -114,11 +114,11 @@ void Renderer::initialiseGLData() {
 	
   std::cerr << "Renderer::initialising shaders" << std::endl;
   for( auto& s : mShaders ) {
-    s->initialiseGLData();
+    s.second->initialiseGLData();
   }
   std::cerr << "Renderer::initialising textures" << std::endl;
 	for( auto& t : mTextures ) {
-		t->initialiseGLData();
+		t.second->initialiseGLData();
 	}
 	std::cerr << "Renderer::initialising geometry" << std::endl;
 	for( auto& g : mGeometry ) {
@@ -163,7 +163,7 @@ void Renderer::render() {
 SDL_Window* Renderer::window() const { return mWindow; }
 SDL_Surface* Renderer::surface() const { return mSurface; }
 SDL_GLContext Renderer::context() const { return mContext; }
-std::vector<std::shared_ptr<Shader>>& Renderer::shaders() { return mShaders; }
-std::vector<std::shared_ptr<Texture>>& Renderer::textures() { return mTextures; }
+std::map<std::string, std::shared_ptr<Shader>>& Renderer::shaders() { return mShaders; }
+std::map<std::string, std::shared_ptr<Texture>>& Renderer::textures() { return mTextures; }
 std::vector<std::shared_ptr<Geometry>>& Renderer::geometry() { return mGeometry; }
 

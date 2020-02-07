@@ -69,7 +69,8 @@ include_directories(
 )
 add_executable( ${PROJECT_NAME}
 	src/main.cpp
-	src/geometry.cpp
+	src/geometry/geometry.cpp
+	src/geometry/objmodel.cpp
 	src/renderer.cpp
 	src/shaders/shader.cpp
 	src/shaders/shader_diffuse.cpp
