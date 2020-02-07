@@ -312,6 +312,9 @@ int main(int argc, char** argv) {
   renderer->geometry().push_back(geometry);
 
   renderer->initialiseGLData();
+  
+  
+  
 
 // Fire the main loop. Won't quit this until SDL does in some form
 #ifdef __EMSCRIPTEN__

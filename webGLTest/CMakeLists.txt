@@ -42,7 +42,7 @@ if( EMSCRIPTEN )
   
   # Embedded Data
   # Syntax is --embed-file /path/to/file@/destination/path/at/runtime
-  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --embed-file ${PROJECT_SOURCE_DIR}/src/shaders@/shaders" )
+  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --embed-file ${PROJECT_SOURCE_DIR}/src/data@/data" )
 
   # emscripten doesn't provide glm, fortunately it's header-only so we can just include the system version
   # TODO: This is hardcoded for now and points to another repo entirely, yay hacks!
@@ -55,13 +55,17 @@ else()
   include_directories( ${SDL2_INCLUDE_DIRS} )
 endif()  
 
+
+include_directories(
+  ${PROJECT_SOURCE_DIR}/src
+)
 add_executable( ${PROJECT_NAME}
 	src/main.cpp
 	src/geometry.cpp
 	src/renderer.cpp
-	src/shader.cpp
-	src/shader_diffuse.cpp
-	src/shader_phong.cpp
+	src/shaders/shader.cpp
+	src/shaders/shader_diffuse.cpp
+	src/shaders/shader_phong.cpp
 	)
 target_link_libraries( ${PROJECT_NAME} ${EXTRA_SYSTEM_LIBS} )
 
@@ -72,7 +76,7 @@ if( NOT EMSCRIPTEN )
 	  LIBRARY DESTINATION ${INSTALL_LIB}
 	  ARCHIVE DESTINATION ${INSTALL_LIB}
   )
-  install(DIRECTORY ${PROJECT_SOURCE_DIR}/src/shaders DESTINATION ${INSTALL_DATA})
+  install(DIRECTORY ${PROJECT_SOURCE_DIR}/src/data DESTINATION ${INSTALL_DATA})
 else()
   install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.js DESTINATION ./)
   install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.wasm DESTINATION ./)

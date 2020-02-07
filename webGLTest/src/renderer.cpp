@@ -16,9 +16,7 @@ Renderer::Renderer( GLfloat windowWidth, GLfloat windowHeight )
   std::cout << "OpenGL initialised: " << glVer << std::endl;
 }
   
-Renderer::~Renderer() {
-	
-}
+Renderer::~Renderer() {}
 
 bool Renderer::checkErrorCompileShader(GLuint shader) {
 	GLint compileSuccess = 0;

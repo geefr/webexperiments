@@ -7,8 +7,8 @@
 
 Shader_diffuse::Shader_diffuse() {
 	mShaders = {
-		"shaders/vertex/default.vert",
-		"shaders/fragment/diffuse.frag",
+		"data/shaders/vertex/default.vert",
+		"data/shaders/fragment/diffuse.frag",
 	};
 }
 Shader_diffuse::~Shader_diffuse() {}
