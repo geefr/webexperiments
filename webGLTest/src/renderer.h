@@ -6,11 +6,11 @@
 #include <SDL.h>
 #include <GLES3/gl3.h>
 
-#include "glm/vec3.hpp"
-#include "glm/vec4.hpp"
-#include "glm/mat4x4.hpp"
-#include "glm/gtc/matrix_transform.hpp"
-#include "glm/gtc/type_ptr.hpp"
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
+#include <glm/mat4x4.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include <chrono>
 #include <vector>
@@ -39,6 +39,10 @@ class Renderer {
     SDL_GLContext context() const;
     
     std::vector<std::shared_ptr<Geometry>>& geometry();
+    
+    static GLuint defaultTextureDiffuse();
+		static GLuint defaultTextureNormal();
+		static GLuint defaultTextureSpecular();
 
 	private:
 		SDL_Window* mWindow = nullptr;

@@ -59,6 +59,9 @@ add_executable( ${PROJECT_NAME}
 	src/main.cpp
 	src/geometry.cpp
 	src/renderer.cpp
+	src/shader.cpp
+	src/shader_diffuse.cpp
+	src/shader_phong.cpp
 	)
 target_link_libraries( ${PROJECT_NAME} ${EXTRA_SYSTEM_LIBS} )
 

@@ -7,42 +7,53 @@
 Geometry::Geometry() {
 	// TODO: Placeholder goemetry
 	mVertices = {
-		{{-1.0f,-1.0f,-1.0f}, {0.0f,0.0f,0.0f}, {1.0f,1.0f,1.0f,1.0f}},
-		{{-1.0f,-1.0f, 1.0f}, {0.0f,0.0f,0.0f}, {1.0f,1.0f,1.0f,1.0f}},
-		{{-1.0f, 1.0f, 1.0f}, {0.0f,0.0f,0.0f}, {1.0f,1.0f,1.0f,1.0f}},
-		{{1.0f, 1.0f,-1.0f}, {0.0f,0.0f,0.0f}, {1.0f,1.0f,1.0f,1.0f}},
-		{{-1.0f,-1.0f,-1.0f}, {0.0f,0.0f,0.0f}, {1.0f,1.0f,1.0f,1.0f}},
-		{{-1.0f, 1.0f,-1.0f}, {0.0f,0.0f,0.0f}, {1.0f,1.0f,1.0f,1.0f}},
-		{{1.0f,-1.0f, 1.0f}, {0.0f,0.0f,0.0f}, {1.0f,1.0f,1.0f,1.0f}},
-		{{-1.0f,-1.0f,-1.0f}, {0.0f,0.0f,0.0f}, {1.0f,1.0f,1.0f,1.0f}},
-		{{1.0f,-1.0f,-1.0f}, {0.0f,0.0f,0.0f}, {1.0f,1.0f,1.0f,1.0f}},
-		{{1.0f, 1.0f,-1.0f}, {0.0f,0.0f,0.0f}, {1.0f,1.0f,1.0f,1.0f}},
-		{{1.0f,-1.0f,-1.0f}, {0.0f,0.0f,0.0f}, {1.0f,1.0f,1.0f,1.0f}},
-		{{-1.0f,-1.0f,-1.0f}, {0.0f,0.0f,0.0f}, {1.0f,1.0f,1.0f,1.0f}},
-		{{-1.0f,-1.0f,-1.0f}, {0.0f,0.0f,0.0f}, {1.0f,1.0f,1.0f,1.0f}},
-		{{-1.0f, 1.0f, 1.0f}, {0.0f,0.0f,0.0f}, {1.0f,1.0f,1.0f,1.0f}},
-		{{-1.0f, 1.0f,-1.0f}, {0.0f,0.0f,0.0f}, {1.0f,1.0f,1.0f,1.0f}},
-		{{1.0f,-1.0f, 1.0f}, {0.0f,0.0f,0.0f}, {1.0f,1.0f,1.0f,1.0f}},
-		{{-1.0f,-1.0f, 1.0f}, {0.0f,0.0f,0.0f}, {1.0f,1.0f,1.0f,1.0f}},
-		{{-1.0f,-1.0f,-1.0f}, {0.0f,0.0f,0.0f}, {1.0f,1.0f,1.0f,1.0f}},
-		{{-1.0f, 1.0f, 1.0f}, {0.0f,0.0f,0.0f}, {1.0f,1.0f,1.0f,1.0f}},
-		{{-1.0f,-1.0f, 1.0f}, {0.0f,0.0f,0.0f}, {1.0f,1.0f,1.0f,1.0f}},
-		{{1.0f,-1.0f, 1.0f}, {0.0f,0.0f,0.0f}, {1.0f,1.0f,1.0f,1.0f}},
-		{{1.0f, 1.0f, 1.0f}, {0.0f,0.0f,0.0f}, {1.0f,1.0f,1.0f,1.0f}},
-		{{1.0f,-1.0f,-1.0f}, {0.0f,0.0f,0.0f}, {1.0f,1.0f,1.0f,1.0f}},
-		{{1.0f, 1.0f,-1.0f}, {0.0f,0.0f,0.0f}, {1.0f,1.0f,1.0f,1.0f}},
-		{{1.0f,-1.0f,-1.0f}, {0.0f,0.0f,0.0f}, {1.0f,1.0f,1.0f,1.0f}},
-		{{1.0f, 1.0f, 1.0f}, {0.0f,0.0f,0.0f}, {1.0f,1.0f,1.0f,1.0f}},
-		{{1.0f,-1.0f, 1.0f}, {0.0f,0.0f,0.0f}, {1.0f,1.0f,1.0f,1.0f}},
-		{{1.0f, 1.0f, 1.0f}, {0.0f,0.0f,0.0f}, {1.0f,1.0f,1.0f,1.0f}},
-		{{1.0f, 1.0f,-1.0f}, {0.0f,0.0f,0.0f}, {1.0f,1.0f,1.0f,1.0f}},
-		{{-1.0f, 1.0f,-1.0f}, {0.0f,0.0f,0.0f}, {1.0f,1.0f,1.0f,1.0f}},
-		{{1.0f, 1.0f, 1.0f}, {0.0f,0.0f,0.0f}, {1.0f,1.0f,1.0f,1.0f}},
-		{{-1.0f, 1.0f,-1.0f}, {0.0f,0.0f,0.0f}, {1.0f,1.0f,1.0f,1.0f}},
-		{{-1.0f, 1.0f, 1.0f}, {0.0f,0.0f,0.0f}, {1.0f,1.0f,1.0f,1.0f}},
-		{{1.0f, 1.0f, 1.0f}, {0.0f,0.0f,0.0f}, {1.0f,1.0f,1.0f,1.0f}},
-		{{-1.0f, 1.0f, 1.0f}, {0.0f,0.0f,0.0f}, {1.0f,1.0f,1.0f,1.0f}},
-		{{1.0f,-1.0f, 1.0f}, {0.0f,0.0f,0.0f}, {1.0f,1.0f,1.0f,1.0f}},
+		// bottom
+		{{-1.0f,-1.0f,-1.0f}, {0.0f,-1.0f,0.0f}, {0.0f,0.0f}},
+		{{-1.0f,-1.0f, 1.0f}, {0.0f,-1.0f,0.0f}, {0.0f,0.0f}},
+		{{-1.0f, 1.0f, 1.0f}, {0.0f,-1.0f,0.0f}, {0.0f,0.0f}},
+		{{1.0f, 1.0f,-1.0f}, {0.0f,-1.0f,0.0f}, {0.0f,0.0f}},
+		{{-1.0f,-1.0f,-1.0f}, {0.0f,-1.0f,0.0f}, {0.0f,0.0f}},
+		{{-1.0f, 1.0f,-1.0f}, {0.0f,-1.0f,0.0f}, {0.0f,0.0f}},
+		
+		// top
+		{{1.0f,-1.0f, 1.0f}, {0.0f,1.0f,0.0f}, {0.0f,0.0f}},
+		{{-1.0f,-1.0f,-1.0f}, {0.0f,1.0f,0.0f}, {0.0f,0.0f}},
+		{{1.0f,-1.0f,-1.0f}, {0.0f,1.0f,0.0f}, {0.0f,0.0f}},
+		{{1.0f, 1.0f,-1.0f}, {0.0f,1.0f,0.0f}, {0.0f,0.0f}},
+		{{1.0f,-1.0f,-1.0f}, {0.0f,1.0f,0.0f}, {0.0f,0.0f}},
+		{{-1.0f,-1.0f,-1.0f}, {0.0f,1.0f,0.0f}, {0.0f,0.0f}},
+		
+		// left
+		{{-1.0f,-1.0f,-1.0f}, {-1.0f,0.0f,0.0f}, {0.0f,0.0f}},
+		{{-1.0f, 1.0f, 1.0f}, {-1.0f,0.0f,0.0f}, {0.0f,0.0f}},
+		{{-1.0f, 1.0f,-1.0f}, {-1.0f,0.0f,0.0f}, {0.0f,0.0f}},
+		{{1.0f,-1.0f, 1.0f}, {-1.0f,0.0f,0.0f}, {0.0f,0.0f}},
+		{{-1.0f,-1.0f, 1.0f}, {-1.0f,0.0f,0.0f}, {0.0f,0.0f}},
+		{{-1.0f,-1.0f,-1.0f}, {-1.0f,0.0f,0.0f}, {0.0f,0.0f}},
+		
+		// right
+		{{-1.0f, 1.0f, 1.0f}, {1.0f,0.0f,0.0f}, {0.0f,0.0f}},
+		{{-1.0f,-1.0f, 1.0f}, {1.0f,0.0f,0.0f}, {0.0f,0.0f}},
+		{{1.0f,-1.0f, 1.0f}, {1.0f,0.0f,0.0f}, {0.0f,0.0f}},
+		{{1.0f, 1.0f, 1.0f}, {1.0f,0.0f,0.0f}, {0.0f,0.0f}},
+		{{1.0f,-1.0f,-1.0f}, {1.0f,0.0f,0.0f}, {0.0f,0.0f}},
+		{{1.0f, 1.0f,-1.0f}, {1.0f,0.0f,0.0f}, {0.0f,0.0f}},
+		
+		// front
+		{{1.0f,-1.0f,-1.0f}, {0.0f,0.0f,1.0f}, {0.0f,0.0f}},
+		{{1.0f, 1.0f, 1.0f}, {0.0f,0.0f,1.0f}, {0.0f,0.0f}},
+		{{1.0f,-1.0f, 1.0f}, {0.0f,0.0f,1.0f}, {0.0f,0.0f}},
+		{{1.0f, 1.0f, 1.0f}, {0.0f,0.0f,1.0f}, {0.0f,0.0f}},
+		{{1.0f, 1.0f,-1.0f}, {0.0f,0.0f,1.0f}, {0.0f,0.0f}},
+		{{-1.0f, 1.0f,-1.0f}, {0.0f,0.0f,1.0f}, {0.0f,0.0f}},
+		
+		// back
+		{{1.0f, 1.0f, 1.0f}, {0.0f,0.0f,-1.0f}, {0.0f,0.0f}},
+		{{-1.0f, 1.0f,-1.0f}, {0.0f,0.0f,-1.0f}, {0.0f,0.0f}},
+		{{-1.0f, 1.0f, 1.0f}, {0.0f,0.0f,-1.0f}, {0.0f,0.0f}},
+		{{1.0f, 1.0f, 1.0f}, {0.0f,0.0f,-1.0f}, {0.0f,0.0f}},
+		{{-1.0f, 1.0f, 1.0f}, {0.0f,0.0f,-1.0f}, {0.0f,0.0f}},
+		{{1.0f,-1.0f, 1.0f}, {0.0f,0.0f,-1.0f}, {0.0f,0.0f}},
 	};
 	mNumVertices = mVertices.size();
 }
@@ -58,39 +69,26 @@ void Geometry::initialiseGLData() {
   // Ditch the cpu-side buffer
   mVertices.clear();
   
-	mShaderProgram = glCreateProgram();
-	glAttachShader(mShaderProgram, Renderer::loadShader("shaders/vertex/default.vert"));
-	glAttachShader(mShaderProgram, Renderer::loadShader("shaders/fragment/default.frag"));
-	glLinkProgram(mShaderProgram);
-
-	struct Vertex {
-		glm::vec3 p; // Position
-		glm::vec3 n; // Normal
-		glm::vec4 c; // Colour
+  mShaderProgram.reset(new Shader_diffuse());
+  mShaderProgram->initialiseGLData();
+  
+	mTextures = {
+		Renderer::defaultTextureDiffuse(),
+		Renderer::defaultTextureNormal(),
+		Renderer::defaultTextureSpecular(),
 	};
-	
-	mShaderAttribute_vertPosition = glGetAttribLocation(mShaderProgram, "vertPosition");
-	glEnableVertexAttribArray(mShaderAttribute_vertPosition);
-	glVertexAttribPointer(mShaderAttribute_vertPosition, 3, GL_FLOAT, false, sizeof(Vertex), reinterpret_cast<GLvoid*>(offsetof(Vertex,p)));
-	
-	mShaderAttribute_vertNormal = glGetAttribLocation(mShaderProgram, "vertNormal");
-	glEnableVertexAttribArray(mShaderAttribute_vertNormal);
-	glVertexAttribPointer(mShaderAttribute_vertNormal, 3, GL_FLOAT, false, sizeof(Vertex), reinterpret_cast<GLvoid*>(offsetof(Vertex,n)));
-	
-	mShaderAttribute_vertColour = glGetAttribLocation(mShaderProgram, "vertColour");
-	glEnableVertexAttribArray(mShaderAttribute_vertColour);
-	glVertexAttribPointer(mShaderAttribute_vertColour, 4, GL_FLOAT, false, sizeof(Vertex), reinterpret_cast<GLvoid*>(offsetof(Vertex,c)));
-
-	mShaderUniform_mvp = glGetUniformLocation(mShaderProgram, "mvp");
-	mShaderUniform_diffuseColour = glGetUniformLocation(mShaderProgram, "diffuseColour");
 }
 
 void Geometry::render( Renderer* renderer, glm::mat4 projMat, glm::mat4 viewMat ) {
-  auto mvp = projMat * viewMat /* * modelMat */; 
-
-  glUseProgram(mShaderProgram);
-  glUniformMatrix4fv(mShaderUniform_mvp, 1, GL_FALSE, glm::value_ptr(mvp));
-  glUniform4fv(mShaderUniform_diffuseColour, 1, glm::value_ptr(mDiffuseColour));
+  glm::mat4 modelMat(1.0f);
+  
+  glUseProgram(mShaderProgram->id());
+  
+  mShaderProgram->modelMatrix( modelMat );
+  mShaderProgram->viewMatrix( viewMat );
+  mShaderProgram->projMatrix( projMat );
+  
+  mShaderProgram->diffuseColour( mDiffuseColour );
 
   glBindBuffer(GL_ARRAY_BUFFER, mVertexBuffer);
   glDrawArrays(GL_TRIANGLES, 0, mNumVertices);

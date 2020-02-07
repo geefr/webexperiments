@@ -1,13 +1,14 @@
 #version 300 es
 
 // Matrices
-struct Matrices {
-  mat4 model;
-  mat4 view;
-  mat4 proj;
-};
-uniform Matrices matrices;
+uniform mat4 modelMatrix;
+uniform mat4 viewMatrix;
+uniform mat4 projMatrix;
 
+// Material
+uniform vec4 diffuseColour;
+
+/*
 // Material
 struct Material {
   vec3 ambient;
@@ -25,25 +26,26 @@ struct Light {
 };
 uniform int numLights;
 uniform Light lights[10];
+*/
 
 //uniform bool useDiffuseShader;
 //uniform sampler2D diffuseTexture;
 //uniform sampler2D specularTexture;
 
-in vec3 vertPosition;
-in vec3 vertNormal;
-in vec2 vertTexCoord;
+layout(location = 0) in vec3 vertPosition;
+layout(location = 1) in vec3 vertNormal;
+layout(location = 2) in vec2 vertTexCoord;
 
 out vec3 fragViewPosition;
 out vec3 fragNormal;
 out vec2 fragTexCoord;
 
 void main(void) {
-  mat4 modelViewMatrix = matrices.view * matrices.model;
+  mat4 modelViewMatrix = viewMatrix * modelMatrix;
   vec4 vertViewPosition = modelViewMatrix * vec4(vertPosition, 1.0);
   fragViewPosition = vertViewPosition.xyz;
   fragTexCoord = vertTexCoord;
-  gl_Position = matrices.proj * vertViewPosition;
+  gl_Position = projMatrix * vertViewPosition;
   
   mat3 normalMatrix  = transpose(inverse(mat3(modelViewMatrix)));
   fragNormal = normalize(normalMatrix * vertNormal);

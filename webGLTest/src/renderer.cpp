@@ -154,3 +154,6 @@ SDL_Window* Renderer::window() const { return mWindow; }
 SDL_Surface* Renderer::surface() const { return mSurface; }
 SDL_GLContext Renderer::context() const { return mContext; }
 std::vector<std::shared_ptr<Geometry>>& Renderer::geometry() { return mGeometry; }
+GLuint Renderer::defaultTextureDiffuse() { return 0; }
+GLuint Renderer::defaultTextureNormal() { return 0; }
+GLuint Renderer::defaultTextureSpecular() { return 0; }

@@ -2,6 +2,11 @@
 #include <SDL.h>
 #include <GLES3/gl3.h>
 
+#ifndef __EMSCRIPTEN__
+// GLES 3.2 on desktop, for debug extensions and such
+# include <GLES3/gl32.h>
+#endif
+
 #ifdef __EMSCRIPTEN__
 # include <emscripten.h>
 # include <emscripten/fetch.h>
@@ -212,6 +217,58 @@ void render() {
 #endif */
 }
 
+#ifndef __EMSCRIPTEN__
+void openglCallbackFunction(GLenum source,
+                                           GLenum type,
+                                           GLuint id,
+                                           GLenum severity,
+                                           GLsizei length,
+                                           const GLchar* message,
+                                           const void* userParam){
+ 
+    std::cout << "---------------------opengl-callback-start------------" << std::endl;
+    std::cout << "message: "<< message << std::endl;
+    std::cout << "type: ";
+    
+    switch (type) {
+    case GL_DEBUG_TYPE_ERROR:
+        std::cout << "ERROR";
+        break;
+    case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
+        std::cout << "DEPRECATED_BEHAVIOR";
+        break;
+    case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
+        std::cout << "UNDEFINED_BEHAVIOR";
+        break;
+    case GL_DEBUG_TYPE_PORTABILITY:
+        std::cout << "PORTABILITY";
+        break;
+    case GL_DEBUG_TYPE_PERFORMANCE:
+        std::cout << "PERFORMANCE";
+        break;
+    case GL_DEBUG_TYPE_OTHER:
+        std::cout << "OTHER";
+        break;
+    }
+    std::cout << std::endl;
+ 
+    std::cout << "id: " << id << std::endl;
+    std::cout << "severity: ";
+    switch (severity){
+    case GL_DEBUG_SEVERITY_LOW:
+        std::cout << "LOW";
+        break;
+    case GL_DEBUG_SEVERITY_MEDIUM:
+        std::cout << "MEDIUM";
+        break;
+    case GL_DEBUG_SEVERITY_HIGH:
+        std::cout << "HIGH";
+        break;
+    }
+    std::cout << std::endl;
+    std::cout << "---------------------opengl-callback-end--------------" << std::endl;
+}
+#endif
 
 int main(int argc, char** argv) {
   SDL_Init(SDL_INIT_VIDEO);
@@ -226,9 +283,28 @@ int main(int argc, char** argv) {
   SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 2);
 #else  
   SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
+  // TODO: Only in debug builds
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
 #endif
 
   renderer.reset(new Renderer(800, 600));
+
+#ifndef __EMSCRIPTEN__
+  if(glDebugMessageCallback){
+        std::cout << "Register OpenGL debug callback " << std::endl;
+        glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+        glDebugMessageCallback(openglCallbackFunction, nullptr);
+        GLuint unusedIds = 0;
+        glDebugMessageControl(GL_DONT_CARE,
+            GL_DONT_CARE,
+            GL_DONT_CARE,
+            0,
+            &unusedIds,
+            true);
+    }
+    else
+        std::cout << "glDebugMessageCallback not available" << std::endl;
+#endif
 
   if( !shapes.empty() ) currentShape = *shapes.begin();
 
