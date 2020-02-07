@@ -48,6 +48,7 @@
 	  <input type="range" min="0" max="255" value="255" class="slider" id="slider_colour_green">
 	  <input type="range" min="0" max="255" value="255" class="slider" id="slider_colour_blue">
 	  <input type="range" min="0" max="255" value="255" class="slider" id="slider_colour_alpha">
+    <input type="checkbox" id="checkbox_use_texture">
 	  <script type="text/javascript">
 	    var sliderRed = document.getElementById("slider_colour_red");
 	    sliderRed.oninput = function() { Module.slider_colour_red(Number(sliderRed.value)); }
@@ -57,6 +58,8 @@
 	    sliderBlue.oninput = function() { Module.slider_colour_blue(Number(sliderBlue.value)); }
 	    var sliderAlpha = document.getElementById("slider_colour_alpha");
 	    sliderAlpha.oninput = function() { Module.slider_colour_alpha(Number(sliderAlpha.value)); }
+      var checkboxUseTexture = document.getElementById("checkbox_use_texture");
+      checkboxUseTexture.oninput = function() { Module.checkbox_use_texture(checkboxUseTexture.checked); }
 	  </script>
 	</div>
 	<canvas id="canvas" width="800" height="600" style="float:right;width:70%;"

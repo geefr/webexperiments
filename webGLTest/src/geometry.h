@@ -24,17 +24,16 @@ class Geometry {
 		
 		glm::vec4& diffuseColour();
 		TextureSet& textures();
+    void shader( std::shared_ptr<Shader> s );
 	
 	private:
-	  std::unique_ptr<Shader_diffuse> mShaderProgram;
+	  std::shared_ptr<Shader> mShaderProgram;
 	
 		GLuint mVertexBuffer = 0;
 		GLuint mVAO = 0;
 		
 		std::vector<Vertex> mVertices;
 		GLuint mNumVertices = 0;
-		
-		glm::vec4 mDiffuseColour = {1.f,1.f,1.f,1.f};
 		
 		TextureSet mTextures;
 };

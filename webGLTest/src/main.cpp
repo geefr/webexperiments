@@ -40,6 +40,8 @@
 
 std::unique_ptr<Renderer> renderer;
 std::shared_ptr<Geometry> geometry;
+std::shared_ptr<Shader_diffuse> shaderDiffuse;
+std::shared_ptr<Texture_SDL2Image> nullDiffuse;
 
 struct FetchData {
 	std::string data;
@@ -50,16 +52,18 @@ struct FetchData {
   std::map<emscripten_fetch_t*, FetchData> currentFetches;
   
   // Function hooks to javascript
-	void webgltest_jshook_slider_colour_red( int v ) { geometry->diffuseColour().r = static_cast<float>(v) / 255.f; }
-	void webgltest_jshook_slider_colour_green( int v ) { geometry->diffuseColour().g = static_cast<float>(v) / 255.f; }
-	void webgltest_jshook_slider_colour_blue( int v ) { geometry->diffuseColour().b = static_cast<float>(v) / 255.f; }
-	void webgltest_jshook_slider_colour_alpha( int v ) { geometry->diffuseColour().a = static_cast<float>(v) / 255.f; }
+	void jshook_slider_colour_red( int v ) { shaderDiffuse->diffuseColour().r = static_cast<float>(v) / 255.f; }
+	void jshook_slider_colour_green( int v ) { shaderDiffuse->diffuseColour().g = static_cast<float>(v) / 255.f; }
+	void jshook_slider_colour_blue( int v ) { shaderDiffuse->diffuseColour().b = static_cast<float>(v) / 255.f; }
+	void jshook_slider_colour_alpha( int v ) { shaderDiffuse->diffuseColour().a = static_cast<float>(v) / 255.f; }
+  void jshook_checkbox_use_texture( bool b ) { if( b ) { geometry->textures().diffuse = nullDiffuse; } else { geometry->textures().diffuse.reset(); } }
 	
   EMSCRIPTEN_BINDINGS(webGLTest) {
-		emscripten::function("slider_colour_red", &webgltest_jshook_slider_colour_red);
-		emscripten::function("slider_colour_green", &webgltest_jshook_slider_colour_green);
-		emscripten::function("slider_colour_blue", &webgltest_jshook_slider_colour_blue);
-		emscripten::function("slider_colour_alpha", &webgltest_jshook_slider_colour_alpha);
+		emscripten::function("slider_colour_red", &jshook_slider_colour_red);
+		emscripten::function("slider_colour_green", &jshook_slider_colour_green);
+		emscripten::function("slider_colour_blue", &jshook_slider_colour_blue);
+		emscripten::function("slider_colour_alpha", &jshook_slider_colour_alpha);
+    emscripten::function("checkbox_use_texture", &jshook_checkbox_use_texture);
   }
   
   /**
@@ -278,9 +282,9 @@ int main(int argc, char** argv) {
 		std::cerr << "Failed to initialise SDL Video" << std::endl;
 		return EXIT_FAILURE;
 	}
-  
-  if( !(IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF) &
-        (IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF) ) ) {
+
+  if( !(IMG_Init(IMG_INIT_PNG) &
+        (IMG_INIT_PNG) ) ) {
 		std::cerr << "Failed to initialise SDL Image" << std::endl;
 		return EXIT_FAILURE;
 	}
@@ -320,10 +324,14 @@ int main(int argc, char** argv) {
 
   if( !shapes.empty() ) currentShape = *shapes.begin();
 
-  geometry.reset(new Geometry());
+  shaderDiffuse.reset(new Shader_diffuse());
+  renderer->shaders().push_back(shaderDiffuse);
   
-  std::shared_ptr<Texture> nullDiffuse(new Texture_SDL2Image("data/textures/diffuse/null.png"));
+  nullDiffuse.reset(new Texture_SDL2Image("data/textures/diffuse/null.png"));
   renderer->textures().push_back(nullDiffuse);
+  
+  geometry.reset(new Geometry());
+  geometry->shader(shaderDiffuse);
   geometry->textures().diffuse = nullDiffuse;
   renderer->geometry().push_back(geometry);
 

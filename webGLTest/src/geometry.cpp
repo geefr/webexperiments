@@ -3,6 +3,7 @@
 #include "renderer.h"
 
 #include <string>
+#include <iostream>
 
 std::vector<Vertex> cube = {
 	// bottom
@@ -82,17 +83,19 @@ Geometry::~Geometry() {
 }
 
 void Geometry::initialiseGLData() {
+  // Initialise geometry state
 	glGenVertexArrays(1, &mVAO);
 	glBindVertexArray(mVAO);
 	
+  // Upload the vertex data
 	glGenBuffers(1, &mVertexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, mVertexBuffer);
 	glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(mVertices.size() * sizeof(Vertex)), mVertices.data(), GL_STATIC_DRAW);
   // Ditch the cpu-side buffer
   mVertices.clear();
   
-  mShaderProgram.reset(new Shader_diffuse());
-  mShaderProgram->initialiseGLData();
+  // Register the shader attributes for this VAO
+  mShaderProgram->initialiseVertexAttribs();
 }
 
 void Geometry::render( Renderer* renderer, glm::mat4 projMat, glm::mat4 viewMat ) {
@@ -104,8 +107,7 @@ void Geometry::render( Renderer* renderer, glm::mat4 projMat, glm::mat4 viewMat 
   mShaderProgram->viewMatrix( viewMat );
   mShaderProgram->projMatrix( projMat );
   
-  mShaderProgram->diffuseColour( mDiffuseColour );
-  mShaderProgram->diffuseTexture( mTextures.diffuse );
+  mShaderProgram->textureSet() = mTextures;
   
   // Everything is ready, bind the shader and set the uniforms
   mShaderProgram->bind();
@@ -115,5 +117,5 @@ void Geometry::render( Renderer* renderer, glm::mat4 projMat, glm::mat4 viewMat 
   glDrawArrays(GL_TRIANGLES, 0, mNumVertices);
 }
 
-glm::vec4& Geometry::diffuseColour() { return mDiffuseColour; }
 TextureSet& Geometry::textures() { return mTextures; }
+void Geometry::shader( std::shared_ptr<Shader> s ) { mShaderProgram = s; }

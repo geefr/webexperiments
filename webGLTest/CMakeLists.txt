@@ -23,6 +23,8 @@ set( INSTALL_BIN "./" )
 set( INSTALL_LIB "./" )
 set( INSTALL_DATA "./" )
 
+file( GLOB_RECURSE DATA_FILES ${PROJECT_SOURCE_DIR}/src/data/* )
+
 if( EMSCRIPTEN )
   # Fetch options
   # enable fetches, enable waitable fetches on all threads
@@ -31,7 +33,7 @@ if( EMSCRIPTEN )
   set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s FETCH=1" )
 
   # OpenGL options
-  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s USE_WEBGL2=1 -s USE_SDL=2" )
+  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s USE_WEBGL2=1 -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s SDL2_IMAGE_FORMATS='[\"png\"]'" )
 
   # Language and optimisation options
   # Exception catches will be disabled at higher optimisation levels by default, turn them back on but try not to abuse them due to inherent performance issues
@@ -49,6 +51,9 @@ if( EMSCRIPTEN )
   # emscripten doesn't provide glm, fortunately it's header-only so we can just include the system version
   # TODO: This is hardcoded for now and points to another repo entirely, yay hacks!
   include_directories( "/home/gareth/source/junk/js-render-stuff/common/glm/" )
+  
+  # Under emscripten data is packaged into the binary. If listed as sources cmake will rebuild when they change
+  set( EM_SRC_DEPS "${DATA_FILES}" )
 else()
   find_package( SDL2 REQUIRED )
   find_package( SDL2_image REQUIRED )
@@ -71,6 +76,7 @@ add_executable( ${PROJECT_NAME}
 	src/shaders/shader_phong.cpp
 	src/textures/texture.cpp
 	src/textures/texture_sdl2image.cpp
+  ${EM_SRC_DEPS}
 	)
 target_link_libraries( ${PROJECT_NAME} ${EXTRA_SYSTEM_LIBS} )
 

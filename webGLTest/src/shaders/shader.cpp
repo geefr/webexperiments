@@ -37,22 +37,6 @@ void Shader::initialiseGLData() {
 				std::cerr << "Shader::initialiseGLData: Failed to link shader, unknown reason" << std::endl;
 			}
 	}
-
-  /**
-   * TODO: Should document the shader API somewhere, maybe formalise on the shadertoy api even for giggles
-   * 
-   * layout(location = 0) in vec3 vertPosition;
-   * layout(location = 1) in vec3 vertNormal;
-   * layout(location = 2) in vec2 vertTexCoord;
-   */
-	glEnableVertexAttribArray(mShaderAttribute_vertPosition);
-	glVertexAttribPointer(mShaderAttribute_vertPosition, 3, GL_FLOAT, false, sizeof(Vertex), reinterpret_cast<GLvoid*>(offsetof(Vertex,p)));
-		
-	glEnableVertexAttribArray(mShaderAttribute_vertNormal);
-	glVertexAttribPointer(mShaderAttribute_vertNormal, 3, GL_FLOAT, false, sizeof(Vertex), reinterpret_cast<GLvoid*>(offsetof(Vertex,n)));
-		
-	glEnableVertexAttribArray(mShaderAttribute_vertTexCoord);
-	glVertexAttribPointer(mShaderAttribute_vertTexCoord, 2, GL_FLOAT, false, sizeof(Vertex), reinterpret_cast<GLvoid*>(offsetof(Vertex,t)));
 	
 	/**
 	 * Uniform locations
@@ -71,6 +55,24 @@ void Shader::initialiseGLData() {
 	}
 }
 
+void Shader::initialiseVertexAttribs() {
+  /**
+   * TODO: Should document the shader API somewhere, maybe formalise on the shadertoy api even for giggles
+   * 
+   * layout(location = 0) in vec3 vertPosition;
+   * layout(location = 1) in vec3 vertNormal;
+   * layout(location = 2) in vec2 vertTexCoord;
+   */
+	glEnableVertexAttribArray(mShaderAttribute_vertPosition);
+	glVertexAttribPointer(mShaderAttribute_vertPosition, 3, GL_FLOAT, false, sizeof(Vertex), reinterpret_cast<GLvoid*>(offsetof(Vertex,p)));
+		
+	glEnableVertexAttribArray(mShaderAttribute_vertNormal);
+	glVertexAttribPointer(mShaderAttribute_vertNormal, 3, GL_FLOAT, false, sizeof(Vertex), reinterpret_cast<GLvoid*>(offsetof(Vertex,n)));
+		
+	glEnableVertexAttribArray(mShaderAttribute_vertTexCoord);
+	glVertexAttribPointer(mShaderAttribute_vertTexCoord, 2, GL_FLOAT, false, sizeof(Vertex), reinterpret_cast<GLvoid*>(offsetof(Vertex,t)));
+}
+
 void Shader::bind() {
 	glUseProgram(mShaderProgram);
 	glUniformMatrix4fv( mShaderUniformModelMatrix, 1, GL_FALSE, glm::value_ptr(mModelMatrix) );
@@ -83,3 +85,4 @@ GLuint Shader::id() const { return mShaderProgram; }
 void Shader::modelMatrix( glm::mat4 m ) { mModelMatrix = m; }
 void Shader::viewMatrix( glm::mat4 m ) { mViewMatrix = m; }
 void Shader::projMatrix( glm::mat4 m ) { mProjMatrix = m; }
+TextureSet& Shader::textureSet() { return mTextures; }

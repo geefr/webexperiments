@@ -20,11 +20,12 @@ in vec2 fragTexCoord;
 out highp vec4 fragColour;
 
 void main(void) {
-  fragColour = diffuseColour;
-  // Yeah! If statements!
+  // TODO: For now one or the other with an if. Maybe later these get split
   if( diffuseTexturePresent ) {
-		vec4 texColour = texture(diffuseTexture, fragTexCoord);
-		fragColour = vec4(texColour.rgb, 1.0);
-	}
+    //fragColour = vec4(1.0,0.0,1.0,1.0);
+    fragColour = texture(diffuseTexture, fragTexCoord);
+  } else {
+    fragColour = diffuseColour;
+  }
 }
 

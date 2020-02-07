@@ -1,6 +1,8 @@
 #ifndef SHADER_H
 #define SHADER_H
 
+#include "textures/textureset.h"
+
 #include <GLES3/gl3.h>
 #include <glm/mat4x4.hpp>
 
@@ -21,6 +23,13 @@ class Shader {
 		 */
 		virtual void initialiseGLData();
 		
+    /**
+     * Initialise vertex attributes used by the shader
+     * Before calling this ensure that a VAO and VBO are bound,
+     * to register the vertex attribs for the render bucket you care about
+     */
+    virtual void initialiseVertexAttribs();
+    
 		/**
 		 * Bind the shader, set uniforms, make ready for use
 		 */
@@ -33,6 +42,9 @@ class Shader {
 		void modelMatrix( glm::mat4 m );
 		void viewMatrix( glm::mat4 m );
 		void projMatrix( glm::mat4 m );
+    
+    /// Texture set. Will never be bound by base class, but children can use as required
+    TextureSet& textureSet();
 	protected:
 	  Shader();
 		
@@ -56,6 +68,8 @@ class Shader {
 		glm::mat4x4 mModelMatrix;
 		glm::mat4x4 mViewMatrix;
 		glm::mat4x4 mProjMatrix;
+    
+    TextureSet mTextures;
 };
 
 #endif

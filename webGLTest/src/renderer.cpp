@@ -112,10 +112,15 @@ void Renderer::initialiseGLData() {
 
 	glClearColor( 0.2f, 0.2f, 0.2f, 1.0f );
 	
+  std::cerr << "Renderer::initialising shaders" << std::endl;
+  for( auto& s : mShaders ) {
+    s->initialiseGLData();
+  }
+  std::cerr << "Renderer::initialising textures" << std::endl;
 	for( auto& t : mTextures ) {
 		t->initialiseGLData();
 	}
-	
+	std::cerr << "Renderer::initialising geometry" << std::endl;
 	for( auto& g : mGeometry ) {
 		g->initialiseGLData();
 	}
@@ -123,7 +128,7 @@ void Renderer::initialiseGLData() {
 	mStartTime = std::chrono::high_resolution_clock::now();
 }
 
-void Renderer::render() {
+void Renderer::render() {  
 	auto now = std::chrono::high_resolution_clock::now();
 	
 	float renderDelta = static_cast<float>(std::chrono::duration_cast<std::chrono::microseconds>(now - mLastFrameTime).count()) / 1e6f;
@@ -158,5 +163,7 @@ void Renderer::render() {
 SDL_Window* Renderer::window() const { return mWindow; }
 SDL_Surface* Renderer::surface() const { return mSurface; }
 SDL_GLContext Renderer::context() const { return mContext; }
-std::vector<std::shared_ptr<Geometry>>& Renderer::geometry() { return mGeometry; }
+std::vector<std::shared_ptr<Shader>>& Renderer::shaders() { return mShaders; }
 std::vector<std::shared_ptr<Texture>>& Renderer::textures() { return mTextures; }
+std::vector<std::shared_ptr<Geometry>>& Renderer::geometry() { return mGeometry; }
+

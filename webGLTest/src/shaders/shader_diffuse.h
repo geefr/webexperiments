@@ -20,11 +20,7 @@ class Shader_diffuse : public Shader {
 		virtual void bind() override final;
 		
 		/// Set matrix uniforms
-		void diffuseColour( glm::vec4 c );
-		
-		/// Set a diffuse texture
-		/// If present will override diffuseColour
-		void diffuseTexture( std::shared_ptr<Texture> tex );
+    glm::vec4& diffuseColour();
 		
 	private:
 	  // Uniforms
@@ -35,7 +31,6 @@ class Shader_diffuse : public Shader {
 	  
 	  // Uniform values/state
 	  glm::vec4 mDiffuseColour = {1.0f,1.0f,1.0f,1.0f};
-	  TextureSet mTextures;
 };
 
 #endif
