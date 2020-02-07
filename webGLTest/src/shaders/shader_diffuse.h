@@ -3,6 +3,8 @@
 
 #include "shader.h"
 
+#include "textures/textureset.h"
+
 /**
  * A basic shader with diffuse colour only for rendering
  */
@@ -14,11 +16,26 @@ class Shader_diffuse : public Shader {
 		/// Compile the shader, make ready to be used etc.
 		virtual void initialiseGLData() override final;
 		
+		/// Bind the shader, set uniforms
+		virtual void bind() override final;
+		
 		/// Set matrix uniforms
 		void diffuseColour( glm::vec4 c );
+		
+		/// Set a diffuse texture
+		/// If present will override diffuseColour
+		void diffuseTexture( std::shared_ptr<Texture> tex );
+		
 	private:
 	  // Uniforms
 	  GLint mShaderUniformDiffuseColour = -1;
+	  
+	  GLint mShaderUniformDiffuseTexturePresent = -1;
+	  GLint mShaderUniformDiffuseTextureSampler = -1;
+	  
+	  // Uniform values/state
+	  glm::vec4 mDiffuseColour = {1.0f,1.0f,1.0f,1.0f};
+	  TextureSet mTextures;
 };
 
 #endif

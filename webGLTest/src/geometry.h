@@ -29,6 +29,7 @@ class Geometry {
 	  std::unique_ptr<Shader_diffuse> mShaderProgram;
 	
 		GLuint mVertexBuffer = 0;
+		GLuint mVAO = 0;
 		
 		std::vector<Vertex> mVertices;
 		GLuint mNumVertices = 0;

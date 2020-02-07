@@ -25,10 +25,10 @@ void Texture_SDL2Image::initialiseGLData() {
 	GLint texFormat;
 	switch(img->format->BytesPerPixel) {
 		case 3:
-		  texFormat = GL_RGB8;
+		  texFormat = GL_RGB;
 		  break;
 		case 4:
-			texFormat = GL_RGBA8;
+			texFormat = GL_RGBA;
 			break;
 		default:
 			std::cerr << "Texture_SDL2Image::initialiseGLData: ERROR: Unsupported image depth (" << img->format->BytesPerPixel << " bytes per pixel): " << mFilename << std::endl;

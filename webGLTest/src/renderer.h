@@ -51,8 +51,12 @@ class Renderer {
 		GLfloat mWindowHeight;
 		
 		glm::vec4 mDiffuseColour = {1.f,1.f,1.f,1.f};
-		glm::vec3 mViewRot = {1.f,1.f,1.f};
+		glm::vec3 mViewRot = {0.f,0.f,0.f};
+		glm::vec3 mViewPos = {0.f,0.f,2.f};
+		
 		glm::vec3 mViewRotDelta = {0.5f,0.7f,1.0f};
+		// glm::vec3 mViewRotDelta = {0.0f,0.0f,0.0f};
+		glm::vec3 mViewPosDelta = {0.f,0.f,-0.01f};
 		
 		std::chrono::time_point<std::chrono::high_resolution_clock> mStartTime;
 		std::chrono::time_point<std::chrono::high_resolution_clock> mLastFrameTime;

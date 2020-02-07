@@ -322,7 +322,7 @@ int main(int argc, char** argv) {
 
   geometry.reset(new Geometry());
   
-  std::shared_ptr<Texture> nullDiffuse(new Texture_SDL2Image("data/textures/diffuse/null.png"));
+  std::shared_ptr<Texture> nullDiffuse(new Texture_SDL2Image("data/textures/diffuse/froggie.png"));
   renderer->textures().push_back(nullDiffuse);
   geometry->textures().diffuse = nullDiffuse;
   renderer->geometry().push_back(geometry);

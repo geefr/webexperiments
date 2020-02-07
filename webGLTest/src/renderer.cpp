@@ -134,9 +134,12 @@ void Renderer::render() {
   if( mViewRot.y > 2 * 3.14 ) mViewRot.y = 0.0f;
   if( mViewRot.z > 2 * 3.14 ) mViewRot.z = 0.0f;
   
-  // glm::mat4 projMat = glm::ortho( -180.0f, 180.0f, -90.0f, 90.0f, 1.f, -1.f );
+  mViewPos += renderDelta * mViewPosDelta;
+  if( mViewPos.z <= 1.f ) mViewPos.z = 2.f;
+  
   glm::mat4 projMat = glm::perspective( 90.0f, static_cast<GLfloat>(mWindowWidth) / static_cast<GLfloat>(mWindowHeight), 0.1f, 100.0f );
-  glm::mat4 viewMat = glm::lookAt( glm::vec3(0.0, 0.0, 2.0), glm::vec3(0.0,0.0,0.0), glm::vec3(0.0,1.0,0.0) );
+  glm::mat4 viewMat = glm::lookAt( mViewPos, glm::vec3(0.0,0.0,0.0), glm::vec3(0.0,1.0,0.0) );
+  
   viewMat = glm::rotate( viewMat, mViewRot.x, glm::vec3(1.0, 0.0, 0.0) );
   viewMat = glm::rotate( viewMat, mViewRot.y, glm::vec3(0.0, 1.0, 0.0) );
   viewMat = glm::rotate( viewMat, mViewRot.z, glm::vec3(0.0, 0.0, 1.0) );

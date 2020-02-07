@@ -21,6 +21,11 @@ class Shader {
 		 */
 		virtual void initialiseGLData();
 		
+		/**
+		 * Bind the shader, set uniforms, make ready for use
+		 */
+		virtual void bind();
+		
 		/// The OpenGL shader ID
 		GLuint id() const;
 		
@@ -46,6 +51,11 @@ class Shader {
 		GLint mShaderUniformModelMatrix = -1;
 		GLint mShaderUniformViewMatrix = -1;
 		GLint mShaderUniformProjMatrix = -1;
+		
+		// Uniform values
+		glm::mat4x4 mModelMatrix;
+		glm::mat4x4 mViewMatrix;
+		glm::mat4x4 mProjMatrix;
 };
 
 #endif

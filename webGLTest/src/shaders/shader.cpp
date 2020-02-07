@@ -70,8 +70,15 @@ void Shader::initialiseGLData() {
 	}
 }
 
+void Shader::bind() {
+	glUseProgram(mShaderProgram);
+	glUniformMatrix4fv( mShaderUniformModelMatrix, 1, GL_FALSE, glm::value_ptr(mModelMatrix) );
+	glUniformMatrix4fv( mShaderUniformViewMatrix, 1, GL_FALSE, glm::value_ptr(mViewMatrix) );
+	glUniformMatrix4fv( mShaderUniformProjMatrix, 1, GL_FALSE, glm::value_ptr(mProjMatrix) );
+}
+
 GLuint Shader::id() const { return mShaderProgram; }
 
-void Shader::modelMatrix( glm::mat4 m ) { glUniformMatrix4fv( mShaderUniformModelMatrix, 1, GL_FALSE, glm::value_ptr(m) ); }
-void Shader::viewMatrix( glm::mat4 m ) { glUniformMatrix4fv( mShaderUniformViewMatrix, 1, GL_FALSE, glm::value_ptr(m) ); }
-void Shader::projMatrix( glm::mat4 m ) { glUniformMatrix4fv( mShaderUniformProjMatrix, 1, GL_FALSE, glm::value_ptr(m) ); }
+void Shader::modelMatrix( glm::mat4 m ) { mModelMatrix = m; }
+void Shader::viewMatrix( glm::mat4 m ) { mViewMatrix = m; }
+void Shader::projMatrix( glm::mat4 m ) { mProjMatrix = m; }
