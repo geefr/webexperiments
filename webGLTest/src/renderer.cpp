@@ -112,6 +112,10 @@ void Renderer::initialiseGLData() {
 
 	glClearColor( 0.2f, 0.2f, 0.2f, 1.0f );
 	
+	for( auto& t : mTextures ) {
+		t->initialiseGLData();
+	}
+	
 	for( auto& g : mGeometry ) {
 		g->initialiseGLData();
 	}
@@ -152,6 +156,4 @@ SDL_Window* Renderer::window() const { return mWindow; }
 SDL_Surface* Renderer::surface() const { return mSurface; }
 SDL_GLContext Renderer::context() const { return mContext; }
 std::vector<std::shared_ptr<Geometry>>& Renderer::geometry() { return mGeometry; }
-GLuint Renderer::defaultTextureDiffuse() { return 0; }
-GLuint Renderer::defaultTextureNormal() { return 0; }
-GLuint Renderer::defaultTextureSpecular() { return 0; }
+std::vector<std::shared_ptr<Texture>>& Renderer::textures() { return mTextures; }

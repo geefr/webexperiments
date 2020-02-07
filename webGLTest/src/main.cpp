@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <SDL.h>
+#include <SDL_image.h>
+
 #include <GLES3/gl3.h>
 
 #ifndef __EMSCRIPTEN__
@@ -34,6 +36,7 @@
 #include "glm/gtc/type_ptr.hpp"
 
 #include "renderer.h"
+#include "textures/texture_sdl2image.h"
 
 std::unique_ptr<Renderer> renderer;
 std::shared_ptr<Geometry> geometry;
@@ -271,7 +274,16 @@ void openglCallbackFunction(GLenum source,
 #endif
 
 int main(int argc, char** argv) {
-  SDL_Init(SDL_INIT_VIDEO);
+  if( SDL_Init(SDL_INIT_VIDEO) < 0 ) {
+		std::cerr << "Failed to initialise SDL Video" << std::endl;
+		return EXIT_FAILURE;
+	}
+  
+  if( !(IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF) &
+        (IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF) ) ) {
+		std::cerr << "Failed to initialise SDL Image" << std::endl;
+		return EXIT_FAILURE;
+	}
 
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
@@ -309,13 +321,18 @@ int main(int argc, char** argv) {
   if( !shapes.empty() ) currentShape = *shapes.begin();
 
   geometry.reset(new Geometry());
+  
+  std::shared_ptr<Texture> nullDiffuse(new Texture_SDL2Image("data/textures/diffuse/null.png"));
+  renderer->textures().push_back(nullDiffuse);
+  geometry->textures().diffuse = nullDiffuse;
   renderer->geometry().push_back(geometry);
 
+  // Upload data to gpu, init etc
+  // - compile/link shaders
+  // - upload textures in renderer->textures
+  // - upload geometry in renderer->geometry
   renderer->initialiseGLData();
   
-  
-  
-
 // Fire the main loop. Won't quit this until SDL does in some form
 #ifdef __EMSCRIPTEN__
   // void emscripten_set_main_loop(em_callback_func func, int fps, int simulate_infinite_loop);

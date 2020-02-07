@@ -30,7 +30,6 @@ class Shader {
 		void projMatrix( glm::mat4 m );
 	protected:
 	  Shader();
-		Shader( std::list<std::string> shaders );
 		
 	  // Source shader paths
 	  std::list<std::string> mShaders;

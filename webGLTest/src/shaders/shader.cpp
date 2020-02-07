@@ -5,9 +5,10 @@
 #include <iostream>
 
 Shader::Shader() {}
-Shader::Shader( std::list<std::string> shaders ) : mShaders(shaders) {}
 
-Shader::~Shader() {}
+Shader::~Shader() {
+	glDeleteProgram(mShaderProgram);
+}
 
 void Shader::initialiseGLData() {
 	// Compile/link the shader
@@ -16,7 +17,25 @@ void Shader::initialiseGLData() {
 		glAttachShader(mShaderProgram, Renderer::loadShader(s));
 	}
 	glLinkProgram(mShaderProgram);
-	if( glGetError() != GL_NO_ERROR ) { std::cerr << "Shader::initialiseGLData: Shader link failed" << std::endl; }
+
+	GLint linkSuccess = 0;
+	glGetProgramiv(mShaderProgram, GL_LINK_STATUS, &linkSuccess);
+	if( linkSuccess == GL_FALSE )
+	{
+			GLint logLength = 0;
+			glGetProgramiv(mShaderProgram, GL_INFO_LOG_LENGTH, &logLength);
+			std::vector<GLchar> log(static_cast<std::vector<GLchar>::size_type>(logLength));
+			glGetProgramInfoLog(mShaderProgram, logLength, &logLength, &log[0]);
+			glDeleteProgram(mShaderProgram);
+			if( !log.empty() )
+			{
+				std::cerr << "Shader::initialiseGLData: Failed to link shader: " << std::string(reinterpret_cast<const char*>(&log[0])) << std::endl;
+			}
+			else
+			{
+				std::cerr << "Shader::initialiseGLData: Failed to link shader, unknown reason" << std::endl;
+			}
+	}
 
   /**
    * TODO: Should document the shader API somewhere, maybe formalise on the shadertoy api even for giggles

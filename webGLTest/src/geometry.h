@@ -2,7 +2,7 @@
 #define GEOMETRY_H
 
 #include "vertex.h"
-#include "textureset.h"
+#include "textures/textureset.h"
 #include "shaders/shader_diffuse.h"
 
 #include <GLES3/gl3.h>
@@ -23,6 +23,7 @@ class Geometry {
 		void render( Renderer* renderer, glm::mat4 projMat, glm::mat4 viewMat );
 		
 		glm::vec4& diffuseColour();
+		TextureSet& textures();
 	
 	private:
 	  std::unique_ptr<Shader_diffuse> mShaderProgram;

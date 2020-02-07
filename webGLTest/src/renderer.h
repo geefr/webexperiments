@@ -2,6 +2,7 @@
 #define RENDERER_H
 
 #include "geometry.h"
+#include "textures/textureset.h"
 
 #include <SDL.h>
 #include <GLES3/gl3.h>
@@ -38,12 +39,9 @@ class Renderer {
     SDL_Surface* surface() const;
     SDL_GLContext context() const;
     
+    std::vector<std::shared_ptr<Texture>>& textures();
     std::vector<std::shared_ptr<Geometry>>& geometry();
     
-    static GLuint defaultTextureDiffuse();
-		static GLuint defaultTextureNormal();
-		static GLuint defaultTextureSpecular();
-
 	private:
 		SDL_Window* mWindow = nullptr;
 		SDL_Surface* mSurface = nullptr;
@@ -59,6 +57,7 @@ class Renderer {
 		std::chrono::time_point<std::chrono::high_resolution_clock> mStartTime;
 		std::chrono::time_point<std::chrono::high_resolution_clock> mLastFrameTime;
 		
+		std::vector<std::shared_ptr<Texture>> mTextures;
 		std::vector<std::shared_ptr<Geometry>> mGeometry;
 };
 

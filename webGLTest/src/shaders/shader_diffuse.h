@@ -12,7 +12,7 @@ class Shader_diffuse : public Shader {
 		virtual ~Shader_diffuse();
 				
 		/// Compile the shader, make ready to be used etc.
-		virtual void initialiseGLData() override;
+		virtual void initialiseGLData() override final;
 		
 		/// Set matrix uniforms
 		void diffuseColour( glm::vec4 c );

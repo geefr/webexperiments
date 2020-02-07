@@ -3,6 +3,8 @@ project( webGLTest )
 
 set( CMAKE_CXX_STANDARD 17 ) 
 
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/sdl2)
+
 if( CMAKE_COMPILER_IS_GNUCC )
   if( CMAKE_CXX_COMPILER_VERSION VERSION_LESS 8 )
     # Can't get std::filesystem working on gcc 7, so just require 8
@@ -21,7 +23,7 @@ set( INSTALL_BIN "./" )
 set( INSTALL_LIB "./" )
 set( INSTALL_DATA "./" )
 
-if( EMSCRIPTEN )  
+if( EMSCRIPTEN )
   # Fetch options
   # enable fetches, enable waitable fetches on all threads
   # PTHREADS support requires SharedArrayBuffer support in browser. Disabled in many as of ~Sep 2019 due to Spectre vulns
@@ -49,10 +51,11 @@ if( EMSCRIPTEN )
   include_directories( "/home/gareth/source/junk/js-render-stuff/common/glm/" )
 else()
   find_package( SDL2 REQUIRED )
+  find_package( SDL2_image REQUIRED )
   set( OpenGL_GL_PREFERENCE GLVND )
   find_package( OpenGL REQUIRED )
   find_package( glm REQUIRED )
-  include_directories( ${SDL2_INCLUDE_DIRS} )
+  include_directories( ${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS} )
 endif()  
 
 
@@ -66,11 +69,13 @@ add_executable( ${PROJECT_NAME}
 	src/shaders/shader.cpp
 	src/shaders/shader_diffuse.cpp
 	src/shaders/shader_phong.cpp
+	src/textures/texture.cpp
+	src/textures/texture_sdl2image.cpp
 	)
 target_link_libraries( ${PROJECT_NAME} ${EXTRA_SYSTEM_LIBS} )
 
 if( NOT EMSCRIPTEN )
-  target_link_libraries( ${PROJECT_NAME} ${SDL2_LIBRARIES} OpenGL::OpenGL )
+  target_link_libraries( ${PROJECT_NAME} SDL2::Main SDL2::Image OpenGL::OpenGL )
   install(TARGETS ${PROJECT_NAME}
 	  RUNTIME DESTINATION ${INSTALL_BIN}
 	  LIBRARY DESTINATION ${INSTALL_LIB}
