@@ -1,14 +1,14 @@
 #ifndef SHADER_DIFFUSE_H
 #define SHADER_DIFFUSE_H
 
-#include "shader.h"
+#include "shader_lightinterface.h"
 
 #include "textures/textureset.h"
 
 /**
  * A basic shader with diffuse colour only for rendering
  */
-class Shader_diffuse : public Shader {
+class Shader_diffuse : public Shader_lightinterface {
 	public:
 		Shader_diffuse();
 		virtual ~Shader_diffuse();
@@ -19,7 +19,7 @@ class Shader_diffuse : public Shader {
 		/// Bind the shader, set uniforms
 		virtual void bind() override final;
 		
-		/// Set matrix uniforms
+		/// Access uniform values
     glm::vec4& diffuseColour();
 		
 	private:

@@ -74,7 +74,7 @@ add_executable( ${PROJECT_NAME}
 	src/renderer.cpp
 	src/shaders/shader.cpp
 	src/shaders/shader_diffuse.cpp
-	src/shaders/shader_phong.cpp
+	src/shaders/shader_lightinterface.cpp
 	src/textures/texture.cpp
 	src/textures/texture_sdl2image.cpp
 	)

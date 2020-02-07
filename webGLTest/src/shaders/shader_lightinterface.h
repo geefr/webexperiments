@@ -2,8 +2,9 @@
 #define SHADER_LIGHTINTERFACE_H
 
 #include "shader.h"
+#include "light.h"
 
-#include <list>
+#include <vector>
 
 /**
  * Shader interface extension, adds lighting uniforms
@@ -19,29 +20,31 @@
  */
 class Shader_lightinterface : public Shader {
 	public:
-		struct Light {
-			vec3 position;
-			vec3 colour;
-			float falloff;
-			float radius;
-		};
-	
 		virtual ~Shader_lightinterface();
 				
 		/// Compile the shader, make ready to be used etc.
 		virtual void initialiseGLData() override;
 		
-		std::list<Shader_lightinterface::Light>& lights();
+		/**
+		 * Bind the shader, set uniforms, make ready for use
+		 */
+		virtual void bind() override;
 		
-		/// Set matrix uniforms
-		void diffuseColour( glm::vec4 c );
+		std::vector<Light>& lights();
 	protected:
 		Shader_lightinterface();
 		
 	  // Uniforms
-	  blablablabla need to do a bunch of tricky stuff here to get the uniforms/arrays working somehow. Probably GLES is weirder than normal so this'll be hard..
-	  
-	  std::list<Shader_lightinterface::Light> mLights;
+	  const GLuint mMaxLights = 10;
+	  GLuint mShaderUniform_numLights = -1;
+	  struct LightUniform {
+			GLuint position;
+			GLuint colour;
+			GLuint falloff;
+			GLuint radius;
+		};
+	  std::vector<LightUniform> mShaderUniform_lights;
+	  std::vector<Light> mLights;
 };
 
 #endif
