@@ -112,15 +112,15 @@ void Renderer::initialiseGLData() {
 
 	glClearColor( 0.2f, 0.2f, 0.2f, 1.0f );
 	
-  std::cerr << "Renderer::initialising shaders" << std::endl;
+  //std::cerr << "Renderer::initialising shaders" << std::endl;
   for( auto& s : mShaders ) {
     s.second->initialiseGLData();
   }
-  std::cerr << "Renderer::initialising textures" << std::endl;
+  //std::cerr << "Renderer::initialising textures" << std::endl;
 	for( auto& t : mTextures ) {
 		t.second->initialiseGLData();
 	}
-	std::cerr << "Renderer::initialising geometry" << std::endl;
+	//std::cerr << "Renderer::initialising geometry" << std::endl;
 	for( auto& g : mGeometry ) {
 		g->initialiseGLData();
 	}

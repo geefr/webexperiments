@@ -14,7 +14,7 @@ void Shader::initialiseGLData() {
 	// Compile/link the shader
 	mShaderProgram = glCreateProgram();
 	for( auto& s : mShaders ) {
-    std::cerr << "Compiling shader: " << s << std::endl;
+    //std::cerr << "Compiling shader: " << s << std::endl;
 		glAttachShader(mShaderProgram, Renderer::loadShader(s));
 	}
 	glLinkProgram(mShaderProgram);

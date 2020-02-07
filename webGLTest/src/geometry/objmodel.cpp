@@ -65,6 +65,7 @@ bool ObjModel::load() {
 		// And don't forget .obj indices start at 1
 		if( mVertCoords.size() >= vertI ) vertex.p = mVertCoords[vertI - 1];
 		if( mVertTexCoords.size() >= vertI ) vertex.t = mVertTexCoords[texI - 1];
+		else vertex.t = glm::vec2(0.0f,0.0f);
 		if( mVertNorms.size() >= normI ) vertex.n = mVertNorms[normI - 1];
 
 		//auto existingVert = std::find(mVertices.begin(), mVertices.end(), vertex);
@@ -90,9 +91,10 @@ void ObjModel::objTexCoord(std::string line) {
 	auto v = 0.f;
 	// auto w = 0.f;
 	if( parts.size() >= 2 ) v = std::stof(parts[1]);
-	// if( parts.size() >= 3 ) w = std::stof(parts[2]);
-
-	std::cerr << "Obj::load: Render Framework only supports u,v tex coords. w ignored" << std::endl;
+	if( parts.size() >= 3 ) {
+	  // if( parts.size() >= 3 ) w = std::stof(parts[2]);
+    std::cerr << "ObjModel::load: only u,v tex coords are supported. w ignored" << std::endl;
+	}
 
 	mVertTexCoords.push_back({u,v});
 }
