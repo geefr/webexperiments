@@ -77,7 +77,6 @@ add_executable( ${PROJECT_NAME}
 	src/shaders/shader_phong.cpp
 	src/textures/texture.cpp
 	src/textures/texture_sdl2image.cpp
-  ${EM_SRC_DEPS}
 	)
 target_link_libraries( ${PROJECT_NAME} ${EXTRA_SYSTEM_LIBS} )
 

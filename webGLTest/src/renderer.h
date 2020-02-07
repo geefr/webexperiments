@@ -59,7 +59,7 @@ class Renderer {
 		
 		glm::vec3 mViewRotDelta = {0.5f,0.7f,1.0f};
 		//glm::vec3 mViewRotDelta = {0.0f,0.0f,0.0f};
-		glm::vec3 mViewPosDelta = {0.f,0.f,-0.01f};
+		glm::vec3 mViewPosDelta = {0.0f,0.0f,0.0f};
 		
 		std::chrono::time_point<std::chrono::high_resolution_clock> mStartTime;
 		std::chrono::time_point<std::chrono::high_resolution_clock> mLastFrameTime;
