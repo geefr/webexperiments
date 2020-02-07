@@ -28,6 +28,7 @@ void Shader_lightinterface::initialiseGLData() {
 	for( auto i = 0; i < mMaxLights; ++i ) {
 		mShaderUniform_lights[i].position = glGetUniformLocation(mShaderProgram, std::string("lights[" + std::to_string(i) + "].position").c_str());
 		mShaderUniform_lights[i].colour = glGetUniformLocation(mShaderProgram, std::string("lights[" + std::to_string(i) + "].colour").c_str());
+		mShaderUniform_lights[i].intensity = glGetUniformLocation(mShaderProgram, std::string("lights[" + std::to_string(i) + "].intensity").c_str());
 		mShaderUniform_lights[i].falloff = glGetUniformLocation(mShaderProgram, std::string("lights[" + std::to_string(i) + "].falloff").c_str());
 		mShaderUniform_lights[i].radius = glGetUniformLocation(mShaderProgram, std::string("lights[" + std::to_string(i) + "].radius").c_str());
 	}
@@ -41,6 +42,7 @@ void Shader_lightinterface::bind() {
 	for( auto i = 0; i < mLights.size(); ++i ) {
 		glUniform3fv(mShaderUniform_lights[i].position, 1, glm::value_ptr(mLights[i].position));
 		glUniform3fv(mShaderUniform_lights[i].colour, 1, glm::value_ptr(mLights[i].colour));
+		glUniform3fv(mShaderUniform_lights[i].intensity, 1, glm::value_ptr(mLights[i].intensity));
 		glUniform1f(mShaderUniform_lights[i].falloff, mLights[i].falloff);
 		glUniform1f(mShaderUniform_lights[i].radius, mLights[i].radius);
 	}

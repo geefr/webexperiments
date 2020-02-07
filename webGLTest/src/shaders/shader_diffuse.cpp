@@ -15,7 +15,7 @@ Shader_diffuse::~Shader_diffuse() {}
 		
 /// Compile the shader, make ready to be used etc.
 void Shader_diffuse::initialiseGLData() {
-	Shader::initialiseGLData();
+	Shader_lightinterface::initialiseGLData();
 	/**
 	 * Uniform locations
 	 * uniform vec4 diffuseColour;
@@ -34,7 +34,7 @@ void Shader_diffuse::initialiseGLData() {
 }
 
 void Shader_diffuse::bind() {
-	Shader::bind();
+	Shader_lightinterface::bind();
 	
 	if( mTextures.diffuse ) {
     //std::cerr << "Diffuse shader, with texture" << std::endl;

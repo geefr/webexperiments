@@ -12,6 +12,7 @@
  * struct Light {
  *   vec3 position;
  *   vec3 colour;
+ *   vec3 intensity; // ambient, diffuse, specular
  *   float falloff;
  *   float radius;
  * };
@@ -40,6 +41,7 @@ class Shader_lightinterface : public Shader {
 	  struct LightUniform {
 			GLuint position;
 			GLuint colour;
+			GLuint intensity;
 			GLuint falloff;
 			GLuint radius;
 		};

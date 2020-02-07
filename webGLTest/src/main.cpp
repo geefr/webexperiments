@@ -326,6 +326,14 @@ int main(int argc, char** argv) {
   if( !shapes.empty() ) currentShape = *shapes.begin();
 
   shaderDiffuse.reset(new Shader_diffuse());
+  Light testLight1;
+  testLight1.position = {1.0f,0.5f,0.2f};
+  testLight1.colour = {0.5f,0.5f,0.5f};
+  testLight1.intensity = {0.1f,1.0f,0.4f};
+  testLight1.falloff = 100.0f;
+  testLight1.radius = 10.0f;
+  shaderDiffuse->lights().emplace_back( testLight1 );
+  
   renderer->shaders()["diffuse"] = shaderDiffuse;
   
   nullDiffuse.reset(new Texture_SDL2Image("data/textures/diffuse/null.png"));
