@@ -35,10 +35,10 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
 
-#include "renderer.h"
-#include "shaders/shader_phong.h"
-#include "textures/texture_sdl2image.h"
-#include "geometry/objmodel.h"
+#include "engine/renderer.h"
+#include "engine/shaders/shader_phong.h"
+#include "engine/textures/texture_sdl2image.h"
+#include "engine/geometry/objmodel.h"
 
 std::unique_ptr<Renderer> renderer;
 std::shared_ptr<Geometry> geometry;

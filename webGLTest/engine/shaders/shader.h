@@ -1,7 +1,7 @@
 #ifndef SHADER_H
 #define SHADER_H
 
-#include "textures/textureset.h"
+#include "engine/textures/textureset.h"
 
 #include <GLES3/gl3.h>
 #include <glm/mat4x4.hpp>

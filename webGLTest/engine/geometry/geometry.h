@@ -1,10 +1,10 @@
 #ifndef GEOMETRY_H
 #define GEOMETRY_H
 
-#include "vertex.h"
-#include "textures/textureset.h"
-#include "material.h"
-#include "shaders/shader.h"
+#include "engine/vertex.h"
+#include "engine/textures/textureset.h"
+#include "engine/material.h"
+#include "engine/shaders/shader.h"
 
 #include <GLES3/gl3.h>
 #include "glm/mat4x4.hpp"
@@ -26,12 +26,12 @@ class Geometry {
 		TextureSet& textures();
     void shader( std::shared_ptr<Shader> s );
 	
+	  glm::mat4x4& modelMatrix();
+	
 	protected:
 		Geometry();
 		
 		glm::mat4x4 mModelMat;
-		glm::vec3 mModelRot = {0.0f,0.0f,0.0f};
-		glm::vec3 mModelRotDelta = {0.25f,0.35f,0.5f};
 		
 		GLuint mVertexBuffer = 0;
 		GLuint mVAO = 0;

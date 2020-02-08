@@ -2,7 +2,7 @@
 #define SHADER_MATERIALINTERFACE_H
 
 #include "shader_lightinterface.h"
-#include "material.h"
+#include "engine/material.h"
 
 #include <vector>
 

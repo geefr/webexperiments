@@ -23,8 +23,6 @@ set( INSTALL_BIN "./" )
 set( INSTALL_LIB "./" )
 set( INSTALL_DATA "./" )
 
-file( GLOB_RECURSE DATA_FILES ${PROJECT_SOURCE_DIR}/src/data/* )
-
 if( EMSCRIPTEN )
   # Fetch options
   # enable fetches, enable waitable fetches on all threads
@@ -46,11 +44,15 @@ if( EMSCRIPTEN )
   
   # Embedded Data
   # Syntax is --embed-file /path/to/file@/destination/path/at/runtime
-  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --embed-file ${PROJECT_SOURCE_DIR}/src/data@/data" )
+  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --embed-file ${CMAKE_CURRENT_SOURCE_DIR}/engine/data@/data" )
 
   # emscripten doesn't provide glm, fortunately it's header-only so we can just include the system version
   # TODO: This is hardcoded for now and points to another repo entirely, yay hacks!
-  include_directories( "/home/gareth/source/junk/js-render-stuff/common/glm/" )
+  if( NOT GLM_ROOT )
+    set( GLM_ROOT CACHE STRING "" )
+    message( FATAL_ERROR "GLM is required to build, please set GLM_ROOT to a copy of the source" )
+  endif()
+  include_directories( "${GLM_ROOT}" )
   
   # Under emscripten data is packaged into the binary. If listed as sources cmake will rebuild when they change
   set( EM_SRC_DEPS "${DATA_FILES}" )
@@ -61,38 +63,30 @@ else()
   find_package( OpenGL REQUIRED )
   find_package( glm REQUIRED )
   include_directories( ${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS} )
-endif()  
+endif()
 
+add_subdirectory( engine )
 
-include_directories(
-  ${PROJECT_SOURCE_DIR}/src
+add_executable( webgl
+  src/main.cpp
 )
-add_executable( ${PROJECT_NAME}
-	src/main.cpp
-	src/geometry/geometry.cpp
-	src/geometry/objmodel.cpp
-	src/renderer.cpp
-	src/shaders/shader.cpp
-	src/shaders/shader_phong.cpp
-	src/shaders/shader_lightinterface.cpp
-	src/shaders/shader_materialinterface.cpp
-	src/textures/texture.cpp
-	src/textures/texture_sdl2image.cpp
-	)
-target_link_libraries( ${PROJECT_NAME} ${EXTRA_SYSTEM_LIBS} )
+target_include_directories( 
+  webgl PUBLIC
+  ${PROJECT_SOURCE_DIR}
+)
+target_link_libraries( webgl engine )
 
-if( NOT EMSCRIPTEN )
-  target_link_libraries( ${PROJECT_NAME} SDL2::Main SDL2::Image OpenGL::OpenGL )
-  install(TARGETS ${PROJECT_NAME}
+if( NOT EMSCRIPTEN )  
+  target_link_libraries( webgl engine SDL2::Main SDL2::Image OpenGL::OpenGL )
+  install(TARGETS webgl
 	  RUNTIME DESTINATION ${INSTALL_BIN}
 	  LIBRARY DESTINATION ${INSTALL_LIB}
 	  ARCHIVE DESTINATION ${INSTALL_LIB}
   )
-  install(DIRECTORY ${PROJECT_SOURCE_DIR}/src/data DESTINATION ${INSTALL_DATA})
+  install(DIRECTORY ${PROJECT_SOURCE_DIR}/engine/data DESTINATION ${INSTALL_DATA})
 else()
-  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.js DESTINATION ./)
-  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.wasm DESTINATION ./)
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/webgl.js DESTINATION ./)
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/webgl.wasm DESTINATION ./)
   install(FILES ${PROJECT_SOURCE_DIR}/src/html/index.html DESTINATION ${INSTALL_DATA})
 endif()
-
 

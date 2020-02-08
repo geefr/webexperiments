@@ -3,7 +3,7 @@
 
 #include "shader_materialinterface.h"
 
-#include "textures/textureset.h"
+#include "engine/textures/textureset.h"
 
 /**
  * A basic shader set with phong lighting

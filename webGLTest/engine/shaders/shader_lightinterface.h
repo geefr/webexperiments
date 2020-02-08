@@ -2,7 +2,7 @@
 #define SHADER_LIGHTINTERFACE_H
 
 #include "shader.h"
-#include "light.h"
+#include "engine/light.h"
 
 #include <vector>
 

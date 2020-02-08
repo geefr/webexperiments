@@ -1,6 +1,6 @@
 #include "objmodel.h"
 
-#include "vertex.h"
+#include "engine/vertex.h"
 
 #include <iostream>
 #include <fstream>

@@ -1,7 +1,7 @@
 #include "geometry.h"
 
-#include "renderer.h"
-#include "shaders/shader_materialinterface.h"
+#include "engine/renderer.h"
+#include "engine/shaders/shader_materialinterface.h"
 
 #include <string>
 #include <iostream>
@@ -33,17 +33,7 @@ void Geometry::initialiseGLData() {
 void Geometry::render( Renderer* renderer, float renderDelta, glm::mat4 projMat, glm::mat4 viewMat ) {
 	glBindVertexArray(mVAO);
 	
-	mModelRot += renderDelta * mModelRotDelta;
-  if( mModelRot.x > 2 * M_PI ) mModelRot.x = 0.0f;
-  if( mModelRot.y > 2 * M_PI ) mModelRot.y = 0.0f;
-  if( mModelRot.z > 2 * M_PI ) mModelRot.z = 0.0f;
-  
-	mModelMat = glm::mat4x4(1.0f);
-  mModelMat = glm::rotate( mModelMat, mModelRot.x, glm::vec3(1.0, 0.0, 0.0) );
-  mModelMat = glm::rotate( mModelMat, mModelRot.y, glm::vec3(0.0, 1.0, 0.0) );
-  mModelMat = glm::rotate( mModelMat, mModelRot.z, glm::vec3(0.0, 0.0, 1.0) );
-	
-  mShaderProgram->modelMatrix( mModelMat );
+	mShaderProgram->modelMatrix( mModelMat );
   mShaderProgram->viewMatrix( viewMat );
   mShaderProgram->projMatrix( projMat );
   
@@ -63,3 +53,5 @@ void Geometry::render( Renderer* renderer, float renderDelta, glm::mat4 projMat,
 TextureSet& Geometry::textures() { return mTextures; }
 void Geometry::shader( std::shared_ptr<Shader> s ) { mShaderProgram = s; }
 Material& Geometry::material() { return mMaterial; }
+
+glm::mat4x4& Geometry::modelMatrix() { return mModelMat; }
