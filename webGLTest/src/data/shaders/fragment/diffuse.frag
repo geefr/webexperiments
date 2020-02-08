@@ -24,7 +24,7 @@ uniform Light lights[10];
 uniform bool diffuseTexturePresent;
 uniform sampler2D diffuseTexture;
 
-in vec3 fragPosition;
+in vec3 fragWorldPosition;
 in vec3 fragNormal;
 in vec2 fragTexCoord;
 
@@ -41,7 +41,7 @@ vec3 ambientLighting(int i) {
 vec3 diffuseLighting(int i) {
 	Light l = lights[i];
 	vec3 norm = normalize(fragNormal);
-	vec3 lightDir = normalize(l.position - fragPosition);
+	vec3 lightDir = normalize(l.position - fragWorldPosition);
 	float diff = max(dot(norm, lightDir), 0.0);
 	vec3 d = l.intensity.y * diff * l.colour;
 	return d / float(numLights);
@@ -54,13 +54,14 @@ void main(void) {
 		ambient += ambientLighting(i);
 		diffuse += diffuseLighting(i);
 	}
-	
+	vec4 baseFragColour;
   // TODO: For now one or the other with an if. Maybe later these get split
   if( diffuseTexturePresent ) {
     //fragColour = vec4(1.0,0.0,1.0,1.0);
-    fragColour = texture(diffuseTexture, fragTexCoord);
+    baseFragColour = texture(diffuseTexture, fragTexCoord);
   } else {
-    fragColour = diffuseColour * vec4((ambient + diffuse), 1.0);
+		baseFragColour = diffuseColour;
   }
+  fragColour = baseFragColour * vec4((ambient + diffuse), 1.0);
 }
 

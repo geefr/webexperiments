@@ -37,14 +37,14 @@ layout(location = 0) in vec3 vertPosition;
 layout(location = 1) in vec3 vertNormal;
 layout(location = 2) in vec2 vertTexCoord;
 
-out vec3 fragViewPosition;
+out vec3 fragWorldPosition;
 out vec3 fragNormal;
 out vec2 fragTexCoord;
 
 void main(void) {
   mat4 modelViewMatrix = viewMatrix * modelMatrix;
   vec4 vertViewPosition = modelViewMatrix * vec4(vertPosition, 1.0);
-  fragViewPosition = vertViewPosition.xyz;
+  fragWorldPosition = vec3(modelMatrix * vec4(vertPosition, 1.0)) ;
   fragTexCoord = vertTexCoord;
   gl_Position = projMatrix * vertViewPosition;
   
