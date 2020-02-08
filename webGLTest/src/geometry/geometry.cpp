@@ -1,6 +1,7 @@
 #include "geometry.h"
 
 #include "renderer.h"
+#include "shaders/shader_materialinterface.h"
 
 #include <string>
 #include <iostream>
@@ -47,6 +48,9 @@ void Geometry::render( Renderer* renderer, float renderDelta, glm::mat4 projMat,
   mShaderProgram->projMatrix( projMat );
   
   mShaderProgram->textureSet() = mTextures;
+  if( auto matShader = dynamic_cast<Shader_materialinterface*>(mShaderProgram.get()) ) {
+    matShader->material() = mMaterial;
+  }
   
   // Everything is ready, bind the shader and set the uniforms
   mShaderProgram->bind();
@@ -58,3 +62,4 @@ void Geometry::render( Renderer* renderer, float renderDelta, glm::mat4 projMat,
 
 TextureSet& Geometry::textures() { return mTextures; }
 void Geometry::shader( std::shared_ptr<Shader> s ) { mShaderProgram = s; }
+Material& Geometry::material() { return mMaterial; }

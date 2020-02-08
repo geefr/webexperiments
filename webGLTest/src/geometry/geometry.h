@@ -3,6 +3,7 @@
 
 #include "vertex.h"
 #include "textures/textureset.h"
+#include "material.h"
 #include "shaders/shader.h"
 
 #include <GLES3/gl3.h>
@@ -21,7 +22,7 @@ class Geometry {
 		
 		void render( Renderer* renderer, float renderDelta, glm::mat4 projMat, glm::mat4 viewMat );
 		
-		glm::vec4& diffuseColour();
+		Material& material();
 		TextureSet& textures();
     void shader( std::shared_ptr<Shader> s );
 	
@@ -32,15 +33,15 @@ class Geometry {
 		glm::vec3 mModelRot = {0.0f,0.0f,0.0f};
 		glm::vec3 mModelRotDelta = {0.25f,0.35f,0.5f};
 		
-	  std::shared_ptr<Shader> mShaderProgram;
-	
 		GLuint mVertexBuffer = 0;
 		GLuint mVAO = 0;
 		
 		std::vector<Vertex> mVertices;
 		GLuint mNumVertices = 0;
 		
+		std::shared_ptr<Shader> mShaderProgram;
 		TextureSet mTextures;
+		Material mMaterial;
 };
 
 #endif

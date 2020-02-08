@@ -7,7 +7,13 @@ uniform mat4 viewMatrix;
 uniform mat4 projMatrix;
 
 // Material
-uniform vec4 diffuseColour;
+struct Material {
+	vec4 ambient;
+	vec4 diffuse;
+	vec4 specular;
+	float shininess;
+};
+uniform Material material;
 
 // Lights
 struct Light {
@@ -20,7 +26,7 @@ struct Light {
 uniform mediump int numLights;
 uniform Light lights[10];
 
-// Shaders
+// Textures
 uniform bool diffuseTexturePresent;
 uniform sampler2D diffuseTexture;
 
@@ -62,7 +68,7 @@ void main(void) {
   if( diffuseTexturePresent ) {
     baseFragColour = texture(diffuseTexture, fragTexCoord);
   } else {
-		baseFragColour = diffuseColour;
+		baseFragColour = material.diffuse;
   }
   
   fragColour = baseFragColour * vec4((ambient + diffuse + specular), 1.0);
