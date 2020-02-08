@@ -45,6 +45,11 @@ class Renderer {
     
     void initialiseGLData();
     
+    /// Trigger an update
+    void update();
+    /// Query the time in seconds since the last update (frame/physics delta)
+    float updateDelta();
+    /// Render the scene
     void render();
     
     SDL_Window* window() const;
@@ -68,6 +73,7 @@ class Renderer {
 		
 		std::chrono::time_point<std::chrono::high_resolution_clock> mStartTime;
 		std::chrono::time_point<std::chrono::high_resolution_clock> mLastFrameTime;
+		float mRenderDelta = 0.0f;
 		
     std::map<std::string, std::shared_ptr<Shader>> mShaders;
 		std::map<std::string, std::shared_ptr<Texture>> mTextures;

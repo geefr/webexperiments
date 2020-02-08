@@ -25,8 +25,11 @@ public:
 	
 protected:
   std::shared_ptr<Geometry> mGeometry;
-  glm::vec3 mPosition;
-  glm::vec3 mPositionDelta;
+  glm::vec3 mPosition = {0.0f,0.0f,0.0f};
+  glm::vec3 mPositionDelta = {0.0f,0.0f,-1.0f}; // m/s
+  
+  glm::vec3 mRotation = {0.0f,0.0f,0.0f};
+  glm::vec3 mRotationDelta = {0.0f,0.0f,2 * M_PI}; // rads/s
 };
 
 #endif

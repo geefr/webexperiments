@@ -148,12 +148,16 @@ void Renderer::initialiseGLData() {
 	mStartTime = std::chrono::high_resolution_clock::now();
 }
 
-void Renderer::render() {  
+void Renderer::update() {
 	auto now = std::chrono::high_resolution_clock::now();
 	
-	float renderDelta = static_cast<float>(std::chrono::duration_cast<std::chrono::microseconds>(now - mLastFrameTime).count()) / 1e6f;
+	mRenderDelta = static_cast<float>(std::chrono::duration_cast<std::chrono::microseconds>(now - mLastFrameTime).count()) / 1e6f;
 	mLastFrameTime = now;
-  
+}
+
+float Renderer::updateDelta() { return mRenderDelta; }
+
+void Renderer::render() {  
   glm::mat4 projMat = glm::perspective( mCamera.fov, static_cast<GLfloat>(mWindowWidth) / static_cast<GLfloat>(mWindowHeight), mCamera.near, mCamera.far );
   glm::mat4 viewMat = glm::lookAt( mCamera.position, mCamera.lookat, mCamera.up );
 
@@ -163,7 +167,7 @@ void Renderer::render() {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   
   for( auto& g : mGeometry ) {
-		g->render(this, renderDelta, projMat, viewMat);
+		g->render(this, mRenderDelta, projMat, viewMat);
 	}
 	
   SDL_GL_SwapWindow(mWindow);

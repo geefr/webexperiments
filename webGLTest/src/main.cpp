@@ -48,6 +48,7 @@ void initResources() {
 void initEntities() {
 	// Setup entities
 	player.reset(new Player(*renderer.get()));
+	// TODO: We could of course share the geometry between them all, would be more efficient
 	for( auto i = 0; i < maxLasers; ++i ) {
 		lasers.emplace_back(new Laser(*renderer.get()));
 	}
@@ -59,7 +60,7 @@ void initPlaySpace() {
 	
 	// TODO: These shouldn't all be spawned at once :P
 	for( auto i = 0; i < maxLasers; ++i ) {
-		lasers[i]->position() = {i, i, i};
+		lasers[i]->position() = {-(maxLasers / 2) + (float)i, 0.0f, -4.0f};
 	}
 	
 	// The 2 overall scene lights
@@ -71,12 +72,14 @@ void initPlaySpace() {
 	lights.emplace_back(ambient);
 }
 
-void updatePlayer() {
-	
+void updatePlayer(float delta) {
+	player->update(delta);
 }
 
-void updateLasers() {
-	
+void updateLasers(float delta) {
+  for( auto& l : lasers ) {
+		l->update(delta);
+	}	
 }
 
 void updateRenderParams() {
@@ -104,8 +107,10 @@ void render() {
   }
 #endif
 
-  updatePlayer();
-  updateLasers();
+  renderer->update();
+  
+  updatePlayer(renderer->updateDelta());
+  updateLasers(renderer->updateDelta());
   updateRenderParams();
 
 	renderer->render();
