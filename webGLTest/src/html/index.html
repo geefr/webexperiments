@@ -9,6 +9,7 @@
 				margin: 0 auto;
 				padding: 0;
 				width: 800px;
+				color: #cccccc;
 			}
 			.slider {
 				-webkit-appearance: none;
@@ -44,11 +45,46 @@
 </head>
 <body>
 	<div id="sidebar" width="200" height="600" style="float:left;width:30%;">
+		<table>
+			<tr><td><label for="checkbox_use_texture">Diffuse Texture:</label><input type="checkbox" id="checkbox_use_texture" checked="true"></td></tr>
+			<tr><td><label for="picker_colour_ambient">Ambient:</label><input type="color" name="favcolor" value="#ffffff" id="picker_colour_ambient"></td></tr>
+			<tr><td><label for="picker_colour_diffuse">Diffuse:</label><input type="color" name="favcolor" value="#ffffff" id="picker_colour_diffuse"></td></tr>
+			<tr><td><label for="picker_colour_specular">Specular:</label><input type="color" name="favcolor" value="#ffffff" id="picker_colour_specular"></td></tr>
+			<tr><td><label for="slider_shininess">Shininess:</label><input type="range" min="0" max="128" value="32" class="slider" id="slider_shininess"></td></tr>
+		</table>
+		
+		<script type="text/javascript">
+			function hex2rgb(hex) { return ['0x' + hex[1] + hex[2] | 0, '0x' + hex[3] + hex[4] | 0, '0x' + hex[5] + hex[6] | 0]; }
+			
+		  var pickerAmbient = document.getElementById("picker_colour_ambient");
+		  pickerAmbient.oninput = function() { 
+				var c = hex2rgb(pickerAmbient.value);
+				Module.picker_colour_ambient(c[0], c[1], c[2]); 
+			}
+		  var pickerDiffuse = document.getElementById("picker_colour_diffuse");
+		  pickerDiffuse.oninput = function() { 
+				var c = hex2rgb(pickerDiffuse.value);
+				Module.picker_colour_diffuse(c[0], c[1], c[2]); 
+			}
+		  var pickerSpecular = document.getElementById("picker_colour_specular");
+		  pickerSpecular.oninput = function() { 
+				var c = hex2rgb(pickerSpecular.value);
+				Module.picker_colour_specular(c[0], c[1], c[2]); 
+			}
+			
+      var checkboxUseTexture = document.getElementById("checkbox_use_texture");
+      checkboxUseTexture.oninput = function() { Module.checkbox_use_texture(checkboxUseTexture.checked); }
+      
+      var sliderShininess = document.getElementById("slider_shininess");
+      sliderShininess.oninput = function() { Module.slider_shininess(Number(sliderShininess.value)); }
+		</script>
+				
+		<!--
 	  <input type="range" min="0" max="255" value="255" class="slider" id="slider_colour_red">
 	  <input type="range" min="0" max="255" value="255" class="slider" id="slider_colour_green">
 	  <input type="range" min="0" max="255" value="255" class="slider" id="slider_colour_blue">
 	  <input type="range" min="0" max="255" value="255" class="slider" id="slider_colour_alpha">
-    <input type="checkbox" id="checkbox_use_texture" checked="true">
+    
 	  <script type="text/javascript">
 	    var sliderRed = document.getElementById("slider_colour_red");
 	    sliderRed.oninput = function() { Module.slider_colour_red(Number(sliderRed.value)); }
@@ -60,7 +96,7 @@
 	    sliderAlpha.oninput = function() { Module.slider_colour_alpha(Number(sliderAlpha.value)); }
       var checkboxUseTexture = document.getElementById("checkbox_use_texture");
       checkboxUseTexture.oninput = function() { Module.checkbox_use_texture(checkboxUseTexture.checked); }
-	  </script>
+	  </script>-->
 	</div>
 	<canvas id="canvas" width="800" height="600" style="float:right;width:70%;"
 	        oncontextmenu="event.preventDefault()"></canvas>

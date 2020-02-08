@@ -73,7 +73,7 @@ void main(void) {
 		// Specular
 		// TODO: Read shininess from material
 	  // explicit float casts here because WebGL
-		float spec = pow( max( dot(viewDir, reflectDir), float(0.0)), float(32.0));
+		float spec = pow( max( dot(viewDir, reflectDir), float(0.0)), max(material.shininess, 1.0));
 		specular += (l.intensity.z * l.colour * (spec * baseSpecular)) / float(numLights);
 	}
 	

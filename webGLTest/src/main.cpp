@@ -59,6 +59,24 @@ struct FetchData {
 	void jshook_slider_colour_blue( int v ) { geometry->material().diffuse.b = static_cast<float>(v) / 255.f; }
 	void jshook_slider_colour_alpha( int v ) { geometry->material().alpha = static_cast<float>(v) / 255.f; }
   void jshook_checkbox_use_texture( bool b ) { if( b ) { geometry->textures().diffuse = nullDiffuse; } else { geometry->textures().diffuse.reset(); } }
+  void jshook_picker_colour_ambient( int r, int g, int b ) {
+		geometry->material().ambient.r = (float)r / 255.f;
+		geometry->material().ambient.g = (float)g / 255.f;
+		geometry->material().ambient.b = (float)b / 255.f;
+	}
+  void jshook_picker_colour_diffuse( int r, int g, int b ) {
+		geometry->material().diffuse.r = (float)r / 255.f;
+		geometry->material().diffuse.g = (float)g / 255.f;
+		geometry->material().diffuse.b = (float)b / 255.f;
+	}
+	void jshook_picker_colour_specular( int r, int g, int b ) {
+		geometry->material().specular.r = (float)r / 255.f;
+		geometry->material().specular.g = (float)g / 255.f;
+		geometry->material().specular.b = (float)b / 255.f;
+	}
+	void jshook_slider_shininess( int s ) {
+		geometry->material().shininess = s;
+	}
 	
   EMSCRIPTEN_BINDINGS(webGLTest) {
 		emscripten::function("slider_colour_red", &jshook_slider_colour_red);
@@ -66,6 +84,12 @@ struct FetchData {
 		emscripten::function("slider_colour_blue", &jshook_slider_colour_blue);
 		emscripten::function("slider_colour_alpha", &jshook_slider_colour_alpha);
     emscripten::function("checkbox_use_texture", &jshook_checkbox_use_texture);
+    
+    emscripten::function("picker_colour_ambient", &jshook_picker_colour_ambient);
+    emscripten::function("picker_colour_diffuse", &jshook_picker_colour_diffuse);
+    emscripten::function("picker_colour_specular", &jshook_picker_colour_specular);
+    
+    emscripten::function("slider_shininess", &jshook_slider_shininess);
   }
   
   /**
@@ -82,7 +106,6 @@ struct FetchData {
 		stringToUTF8(jsString, stringOnWasmHeap, lengthBytes);
 		return stringOnWasmHeap;
 	});
-	
 #endif
 
 std::list<std::string> shapes;/* = {
@@ -144,7 +167,6 @@ void render() {
     }
   }
 #endif
-
 	renderer->render();
 
 /*
@@ -375,7 +397,6 @@ int main(int argc, char** argv) {
 #else
   while( true ) {
 	  render();
-
 	  // TODO: Framerate throttling/vsync
   }
 #endif  
