@@ -51,7 +51,7 @@ void main(void) {
   gl_Position = projMatrix * vertViewPosition;
   
   // TODO: Performance: Calculate normal matrix on cpu instead of per-vertex
-  mat3 normalMatrix  = transpose(inverse(mat3(modelViewMatrix)));
+  mat3 normalMatrix = transpose(inverse(mat3(modelViewMatrix)));
   fragNormal = normalize(normalMatrix * vertNormal);
 }
 

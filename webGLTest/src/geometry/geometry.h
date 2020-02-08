@@ -3,7 +3,7 @@
 
 #include "vertex.h"
 #include "textures/textureset.h"
-#include "shaders/shader_diffuse.h"
+#include "shaders/shader.h"
 
 #include <GLES3/gl3.h>
 #include "glm/mat4x4.hpp"

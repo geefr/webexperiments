@@ -36,12 +36,13 @@
 #include "glm/gtc/type_ptr.hpp"
 
 #include "renderer.h"
+#include "shaders/shader_phong.h"
 #include "textures/texture_sdl2image.h"
 #include "geometry/objmodel.h"
 
 std::unique_ptr<Renderer> renderer;
 std::shared_ptr<Geometry> geometry;
-std::shared_ptr<Shader_diffuse> shaderDiffuse;
+std::shared_ptr<Shader_phong> shaderPhong;
 std::shared_ptr<Texture_SDL2Image> nullDiffuse;
 
 struct FetchData {
@@ -325,14 +326,14 @@ int main(int argc, char** argv) {
 
   if( !shapes.empty() ) currentShape = *shapes.begin();
 
-  shaderDiffuse.reset(new Shader_diffuse());
+  shaderPhong.reset(new Shader_phong());
   Light testLight1;
   testLight1.position = {-3.0f,-3.0f,2.0f};
   testLight1.colour = {1.0f,0.0f,0.0f};
   testLight1.intensity = {0.2f,1.0f,0.4f};
   testLight1.falloff = 100.0f;
   testLight1.radius = 10.0f;
-  shaderDiffuse->lights().emplace_back( testLight1 );
+  shaderPhong->lights().emplace_back( testLight1 );
   
   Light testLight2;
   testLight2.position = {3.0f,-3.0f,2.0f};
@@ -340,7 +341,7 @@ int main(int argc, char** argv) {
   testLight2.intensity = {0.2f,1.0f,0.4f};
   testLight2.falloff = 100.0f;
   testLight2.radius = 10.0f;  
-  shaderDiffuse->lights().emplace_back( testLight2 );
+  shaderPhong->lights().emplace_back( testLight2 );
 
   Light testLight3;
   testLight3.position = {0.0f,3.0f,2.0f};
@@ -348,16 +349,16 @@ int main(int argc, char** argv) {
   testLight3.intensity = {0.2f,1.0f,0.4f};
   testLight3.falloff = 100.0f;
   testLight3.radius = 10.0f;  
-  shaderDiffuse->lights().emplace_back( testLight3 );
+  shaderPhong->lights().emplace_back( testLight3 );
   
-  renderer->shaders()["diffuse"] = shaderDiffuse;
+  renderer->shaders()["phong"] = shaderPhong;
   
   nullDiffuse.reset(new Texture_SDL2Image("data/textures/diffuse/scrunched-paper.png"));
   renderer->textures()["null"] = nullDiffuse;
   
   //geometry.reset(new Geometry());
   geometry.reset(new ObjModel("data/models/primitives/cube/cube.obj"));
-  geometry->shader(shaderDiffuse);
+  geometry->shader(shaderPhong);
   geometry->textures().diffuse = nullDiffuse;
   renderer->geometry().push_back(geometry);
 
