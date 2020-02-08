@@ -15,6 +15,7 @@
 
 #include "engine/renderer.h"
 #include "engine/shaders/shader_phong.h"
+#include "engine/textures/texture_sdl2image.h"
 
 #include "entities/laser.h"
 #include "entities/player.h"
@@ -42,7 +43,10 @@ void initResources() {
   renderer->shaders()["laser"] = phong;
   renderer->shaders()["player"] = phong;
   
-  renderer->clearColour() = {1.0f,1.0f,1.0f,1.0f};
+  // TODO: This really needs to be in the Player class - Need a way for entities to initialise gl resources
+  renderer->textures()["player.diffuse"].reset(new Texture_SDL2Image("data/models/space/ships/fighter_blocky_01/Diffuse.png"));
+  
+  renderer->clearColour() = {0.0f,0.0f,0.0f,1.0f};
 }
 
 void initEntities() {
@@ -65,11 +69,20 @@ void initPlaySpace() {
 	
 	// The 2 overall scene lights
 	Light ambient;
-	ambient.position = {0.0f,-1.0f,0.0f,0.0f}; // Directional, from above
+	ambient.position = {0.0f,-1.0f,-4.0f,0.0f}; // Directional, above and behind
 	ambient.colour = {1.0f, 1.0f, 1.0f};
-	ambient.intensity = {0.5f, 0.2f, 0.1f};
+	ambient.intensity = {0.5f, 1.0f, 0.1f};
 	
 	lights.emplace_back(ambient);
+	
+	for( auto i = 0; i < maxLasers; ++i ) {
+		Light light;
+		light.position = {0.0f, 0.0f, 0.0f, 1.0f};
+		light.colour = {1.0f, 0.0f, 0.0f};
+		light.intensity = {0.5f, 0.5f, 0.8f};
+		lights.emplace_back(light);
+	}
+	
 }
 
 void updatePlayer(float delta) {
@@ -77,8 +90,16 @@ void updatePlayer(float delta) {
 }
 
 void updateLasers(float delta) {
-  for( auto& l : lasers ) {
+	for( auto i = 0; i < maxLasers; ++i ) {
+		auto& l = lasers[i];
 		l->update(delta);
+		
+		Light light;
+		light.position = glm::vec4(l->position(), 1.0f);
+		light.colour = {1.0f, 0.0f, 0.0f};
+		light.intensity = {0.5f, 0.5f, 0.8f};
+		
+		lights[i + 2] = light;
 	}	
 }
 
