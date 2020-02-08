@@ -374,7 +374,7 @@ int main(int argc, char** argv) {
 #else
   while( true ) {
 	  render();
-	
+
 	  // TODO: Framerate throttling/vsync
   }
 #endif  
