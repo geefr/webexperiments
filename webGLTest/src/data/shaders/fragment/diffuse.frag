@@ -57,7 +57,9 @@ vec3 specularLighting(int i) {
 	vec3 lightDir = normalize(l.position - fragPosition);
 	vec3 reflectDir = reflect( - lightDir, norm );
 	
-	float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
+	// TODO: Read shininess from material
+	// explicit float casts here because WebGL
+	float spec = pow( max( dot(viewDir, reflectDir), float(0.0)), float(32.0));
 	vec3 s = l.intensity.z * spec * l.colour;
 	return s / float(numLights);
 }
