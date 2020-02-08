@@ -4,6 +4,7 @@
 #include "geometry/geometry.h"
 #include "shaders/shader.h"
 #include "textures/textureset.h"
+#include "camera.h"
 
 #include <SDL.h>
 #include <GLES3/gl3.h>
@@ -32,6 +33,15 @@ class Renderer {
 	   */
 		static GLuint loadShader(std::string shader);
     static bool checkErrorCompileShader(GLuint shader);
+#ifndef __EMSCRIPTEN__    
+    static void openglCallbackFunction(GLenum source,
+                                           GLenum type,
+                                           GLuint id,
+                                           GLenum severity,
+                                           GLsizei length,
+                                           const GLchar* message,
+                                           const void* userParam);
+#endif
     
     void initialiseGLData();
     
@@ -40,6 +50,9 @@ class Renderer {
     SDL_Window* window() const;
     SDL_Surface* surface() const;
     SDL_GLContext context() const;
+    
+    glm::vec4& clearColour();
+    Camera& camera();
     
     std::map<std::string, std::shared_ptr<Shader>>& shaders();
     std::map<std::string, std::shared_ptr<Texture>>& textures();
@@ -53,20 +66,15 @@ class Renderer {
 		GLfloat mWindowWidth = 0;
 		GLfloat mWindowHeight;
 		
-		glm::vec4 mDiffuseColour = {1.f,1.f,1.f,1.f};
-		glm::vec3 mViewRot = {0.f,0.f,0.f};
-		glm::vec3 mViewPos = {0.f,0.f,2.f};
-		
-		//glm::vec3 mViewRotDelta = {0.25f,0.35f,0.5f};
-		glm::vec3 mViewRotDelta = {0.0f,0.0f,0.0f};
-		glm::vec3 mViewPosDelta = {0.0f,0.0f,0.0f};
-		
 		std::chrono::time_point<std::chrono::high_resolution_clock> mStartTime;
 		std::chrono::time_point<std::chrono::high_resolution_clock> mLastFrameTime;
 		
     std::map<std::string, std::shared_ptr<Shader>> mShaders;
 		std::map<std::string, std::shared_ptr<Texture>> mTextures;
 		std::vector<std::shared_ptr<Geometry>> mGeometry;
+		
+		glm::vec4 mClearColour = {0.0f,0.0f,0.0f,1.0f};
+		Camera mCamera;
 };
 
 #endif

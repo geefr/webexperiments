@@ -42,8 +42,8 @@ class Shader_lightinterface : public Shader {
 			GLuint position;
 			GLuint colour;
 			GLuint intensity;
-			GLuint falloff;
-			GLuint radius;
+			//GLuint falloff;
+			//GLuint radius;
 		};
 	  std::vector<LightUniform> mShaderUniform_lights;
 	  std::vector<Light> mLights;

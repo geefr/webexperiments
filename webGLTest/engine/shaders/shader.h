@@ -65,9 +65,9 @@ class Shader {
 		GLint mShaderUniformProjMatrix = -1;
 		
 		// Uniform values
-		glm::mat4x4 mModelMatrix;
-		glm::mat4x4 mViewMatrix;
-		glm::mat4x4 mProjMatrix;
+		glm::mat4x4 mModelMatrix; // model space -> world space
+		glm::mat4x4 mViewMatrix;  // world space -> view space
+		glm::mat4x4 mProjMatrix;  // view space -> clip space
     
     TextureSet mTextures;
 };

@@ -13,7 +13,7 @@ void Shader_lightinterface::initialiseGLData() {
 	Shader::initialiseGLData();
   /**
 	 * struct Light {
-	 *   vec3 position;
+	 *   vec4 position; // position or direction
 	 *   vec3 colour;
 	 *   float falloff;
 	 *   float radius;
@@ -29,8 +29,8 @@ void Shader_lightinterface::initialiseGLData() {
 		mShaderUniform_lights[i].position = glGetUniformLocation(mShaderProgram, std::string("lights[" + std::to_string(i) + "].position").c_str());
 		mShaderUniform_lights[i].colour = glGetUniformLocation(mShaderProgram, std::string("lights[" + std::to_string(i) + "].colour").c_str());
 		mShaderUniform_lights[i].intensity = glGetUniformLocation(mShaderProgram, std::string("lights[" + std::to_string(i) + "].intensity").c_str());
-		mShaderUniform_lights[i].falloff = glGetUniformLocation(mShaderProgram, std::string("lights[" + std::to_string(i) + "].falloff").c_str());
-		mShaderUniform_lights[i].radius = glGetUniformLocation(mShaderProgram, std::string("lights[" + std::to_string(i) + "].radius").c_str());
+		//mShaderUniform_lights[i].falloff = glGetUniformLocation(mShaderProgram, std::string("lights[" + std::to_string(i) + "].falloff").c_str());
+		//mShaderUniform_lights[i].radius = glGetUniformLocation(mShaderProgram, std::string("lights[" + std::to_string(i) + "].radius").c_str());
 	}
 }
 
@@ -39,11 +39,15 @@ void Shader_lightinterface::bind() {
 	
 	glUniform1i(mShaderUniform_numLights, mLights.size());
 	for( auto i = 0; i < mLights.size(); ++i ) {
-		glUniform3fv(mShaderUniform_lights[i].position, 1, glm::value_ptr(mLights[i].position));
+		
+		// Lighting calculations are done in view space, but light positions are specified in world
+		auto pos = mViewMatrix * mLights[i].position;
+		
+		glUniform4fv(mShaderUniform_lights[i].position, 1, glm::value_ptr(pos));
 		glUniform3fv(mShaderUniform_lights[i].colour, 1, glm::value_ptr(mLights[i].colour));
 		glUniform3fv(mShaderUniform_lights[i].intensity, 1, glm::value_ptr(mLights[i].intensity));
-		glUniform1f(mShaderUniform_lights[i].falloff, mLights[i].falloff);
-		glUniform1f(mShaderUniform_lights[i].radius, mLights[i].radius);
+		//glUniform1f(mShaderUniform_lights[i].falloff, mLights[i].falloff);
+		//glUniform1f(mShaderUniform_lights[i].radius, mLights[i].radius);
 	}
 }
 

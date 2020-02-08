@@ -18,7 +18,7 @@ uniform Material material;
 
 // Lights
 struct Light {
-  vec3 position;
+  vec4 position; // position or direction, view space
   vec3 colour;
   vec3 intensity; // ambient, diffuse, specular
   float falloff;
@@ -60,7 +60,13 @@ void main(void) {
 		Light l = lights[i];
 		vec3 viewDir = normalize( - fragPosition );
 		vec3 norm = normalize(fragNormal);
-		vec3 lightDir = normalize(l.position - fragPosition);
+		vec3 lightDir;
+		if( l.position.w == 1.0 ) {
+			lightDir = normalize(vec3(l.position) - fragPosition);
+		} else {
+			lightDir = normalize( - vec3(l.position) );
+		}
+
 		vec3 reflectDir = reflect( - lightDir, norm );
 		
 		// Ambient

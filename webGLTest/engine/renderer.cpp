@@ -5,6 +5,11 @@
 #include <fstream>
 #include <filesystem>
 
+#ifndef __EMSCRIPTEN__
+// GLES 3.2 on desktop, for debug extensions and such
+# include <GLES3/gl32.h>
+#endif
+
 Renderer::Renderer( GLfloat windowWidth, GLfloat windowHeight )
   : mWindowWidth(windowWidth), mWindowHeight(windowHeight) {
 
@@ -14,6 +19,23 @@ Renderer::Renderer( GLfloat windowWidth, GLfloat windowHeight )
   
   auto glVer = glGetString(GL_VERSION);
   std::cout << "OpenGL initialised: " << glVer << std::endl;
+  
+#ifndef __EMSCRIPTEN__
+  if(glDebugMessageCallback){
+        std::cout << "Register OpenGL debug callback " << std::endl;
+        glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+        glDebugMessageCallback(openglCallbackFunction, nullptr);
+        GLuint unusedIds = 0;
+        glDebugMessageControl(GL_DONT_CARE,
+            GL_DONT_CARE,
+            GL_DONT_CARE,
+            0,
+            &unusedIds,
+            true);
+    }
+    else
+        std::cout << "glDebugMessageCallback not available" << std::endl;
+#endif
 }
   
 Renderer::~Renderer() {}
@@ -109,8 +131,6 @@ void Renderer::initialiseGLData() {
 	glEnable(GL_CULL_FACE);
 	glFrontFace(GL_CCW);
 	glCullFace(GL_BACK);
-
-	glClearColor( 0.1f, 0.1f, 0.1f, 1.0f );
 	
   //std::cerr << "Renderer::initialising shaders" << std::endl;
   for( auto& s : mShaders ) {
@@ -133,24 +153,13 @@ void Renderer::render() {
 	
 	float renderDelta = static_cast<float>(std::chrono::duration_cast<std::chrono::microseconds>(now - mLastFrameTime).count()) / 1e6f;
 	mLastFrameTime = now;
-
-  mViewRot += renderDelta * mViewRotDelta;
-  if( mViewRot.x > 2 * 3.14 ) mViewRot.x = 0.0f;
-  if( mViewRot.y > 2 * 3.14 ) mViewRot.y = 0.0f;
-  if( mViewRot.z > 2 * 3.14 ) mViewRot.z = 0.0f;
   
-  mViewPos += renderDelta * mViewPosDelta;
-  if( mViewPos.z <= 1.f ) mViewPos.z = 2.f;
-  
-  glm::mat4 projMat = glm::perspective( 90.0f, static_cast<GLfloat>(mWindowWidth) / static_cast<GLfloat>(mWindowHeight), 0.1f, 100.0f );
-  glm::mat4 viewMat = glm::lookAt( mViewPos, glm::vec3(0.0,0.0,0.0), glm::vec3(0.0,1.0,0.0) );
-  
-  viewMat = glm::rotate( viewMat, mViewRot.x, glm::vec3(1.0, 0.0, 0.0) );
-  viewMat = glm::rotate( viewMat, mViewRot.y, glm::vec3(0.0, 1.0, 0.0) );
-  viewMat = glm::rotate( viewMat, mViewRot.z, glm::vec3(0.0, 0.0, 1.0) );
+  glm::mat4 projMat = glm::perspective( mCamera.fov, static_cast<GLfloat>(mWindowWidth) / static_cast<GLfloat>(mWindowHeight), mCamera.near, mCamera.far );
+  glm::mat4 viewMat = glm::lookAt( mCamera.position, mCamera.lookat, mCamera.up );
 
   SDL_GL_MakeCurrent(mWindow, mContext);
   glViewport(0,0,mWindowWidth,mWindowHeight);
+	glClearColor( mClearColour.r, mClearColour.g, mClearColour.b, mClearColour.a );
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   
   for( auto& g : mGeometry ) {
@@ -160,10 +169,64 @@ void Renderer::render() {
   SDL_GL_SwapWindow(mWindow);
 }
 
+#ifndef __EMSCRIPTEN__
+void Renderer::openglCallbackFunction(GLenum source,
+                                           GLenum type,
+                                           GLuint id,
+                                           GLenum severity,
+                                           GLsizei length,
+                                           const GLchar* message,
+                                           const void* userParam){
+ 
+    std::cout << "---------------------opengl-callback-start------------" << std::endl;
+    std::cout << "message: "<< message << std::endl;
+    std::cout << "type: ";
+    
+    switch (type) {
+    case GL_DEBUG_TYPE_ERROR:
+        std::cout << "ERROR";
+        break;
+    case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
+        std::cout << "DEPRECATED_BEHAVIOR";
+        break;
+    case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
+        std::cout << "UNDEFINED_BEHAVIOR";
+        break;
+    case GL_DEBUG_TYPE_PORTABILITY:
+        std::cout << "PORTABILITY";
+        break;
+    case GL_DEBUG_TYPE_PERFORMANCE:
+        std::cout << "PERFORMANCE";
+        break;
+    case GL_DEBUG_TYPE_OTHER:
+        std::cout << "OTHER";
+        break;
+    }
+    std::cout << std::endl;
+ 
+    std::cout << "id: " << id << std::endl;
+    std::cout << "severity: ";
+    switch (severity){
+    case GL_DEBUG_SEVERITY_LOW:
+        std::cout << "LOW";
+        break;
+    case GL_DEBUG_SEVERITY_MEDIUM:
+        std::cout << "MEDIUM";
+        break;
+    case GL_DEBUG_SEVERITY_HIGH:
+        std::cout << "HIGH";
+        break;
+    }
+    std::cout << std::endl;
+    std::cout << "---------------------opengl-callback-end--------------" << std::endl;
+}
+#endif
+
 SDL_Window* Renderer::window() const { return mWindow; }
 SDL_Surface* Renderer::surface() const { return mSurface; }
 SDL_GLContext Renderer::context() const { return mContext; }
 std::map<std::string, std::shared_ptr<Shader>>& Renderer::shaders() { return mShaders; }
 std::map<std::string, std::shared_ptr<Texture>>& Renderer::textures() { return mTextures; }
 std::vector<std::shared_ptr<Geometry>>& Renderer::geometry() { return mGeometry; }
-
+glm::vec4& Renderer::clearColour() { return mClearColour; }
+Camera& Renderer::camera() { return mCamera; }
