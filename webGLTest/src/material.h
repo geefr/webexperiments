@@ -4,10 +4,11 @@
 #include "glm/vec4.hpp"
 
 struct Material {
-	glm::vec4 ambient = {1.0f,1.0f,1.0f,1.0f};
-	glm::vec4 diffuse = {1.0f,1.0f,1.0f,1.0f};
-	glm::vec4 specular = {1.0f,1.0f,1.0f,1.0f};
+	glm::vec3 ambient = {1.0f,1.0f,1.0f};
+	glm::vec3 diffuse = {1.0f,1.0f,1.0f};
+	glm::vec3 specular = {1.0f,1.0f,1.0f};
 	float shininess = 32.0f;
+	float alpha = 1.0f;
 };
 
 #endif

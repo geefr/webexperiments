@@ -8,10 +8,11 @@ uniform mat4 projMatrix;
 
 // Material
 struct Material {
-	vec4 ambient;
-	vec4 diffuse;
-	vec4 specular;
+	vec3 ambient;
+	vec3 diffuse;
+	vec3 specular;
 	float shininess;
+	float alpha;
 };
 uniform Material material;
 
@@ -42,6 +43,19 @@ void main(void) {
 	vec3 ambient = vec3(0.0);
 	vec3 diffuse = vec3(0.0);
 	vec3 specular = vec3(0.0);
+	
+	// Determine source of material info
+	vec3 baseAmbient = material.ambient;
+	vec3 baseDiffuse;
+  // TODO: For now one or the other with an if. Maybe later these get split
+  if( diffuseTexturePresent ) {
+    baseDiffuse = vec3(texture(diffuseTexture, fragTexCoord));
+  } else {
+		baseDiffuse = material.diffuse;
+  }
+  vec3 baseSpecular = material.specular;
+  
+	// Lighting calculations
 	for( int i = 0; i < numLights; i++ ) {
 		Light l = lights[i];
 		vec3 viewDir = normalize( - fragPosition );
@@ -50,27 +64,19 @@ void main(void) {
 		vec3 reflectDir = reflect( - lightDir, norm );
 		
 		// Ambient
-		ambient += (l.intensity.x * l.colour) / float(numLights);
+		ambient += (l.intensity.x * l.colour * baseAmbient) / float(numLights);
 		
 		// Diffuse
 		float diff = max(dot(norm, lightDir), 0.0);
-		ambient += (l.intensity.y * diff * l.colour) / float(numLights);
+		ambient += (l.intensity.y * l.colour * (diff * baseDiffuse)) / float(numLights);
 	
 		// Specular
 		// TODO: Read shininess from material
 	  // explicit float casts here because WebGL
 		float spec = pow( max( dot(viewDir, reflectDir), float(0.0)), float(32.0));
-		specular += (l.intensity.z * spec * l.colour) / float(numLights);
+		specular += (l.intensity.z * l.colour * (spec * baseSpecular)) / float(numLights);
 	}
 	
-	vec4 baseFragColour;
-  // TODO: For now one or the other with an if. Maybe later these get split
-  if( diffuseTexturePresent ) {
-    baseFragColour = texture(diffuseTexture, fragTexCoord);
-  } else {
-		baseFragColour = material.diffuse;
-  }
-  
-  fragColour = baseFragColour * vec4((ambient + diffuse + specular), 1.0);
+  fragColour = vec4((ambient + diffuse + specular), material.alpha);
 }
 

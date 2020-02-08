@@ -57,7 +57,7 @@ struct FetchData {
 	void jshook_slider_colour_red( int v ) { geometry->material().diffuse.r = static_cast<float>(v) / 255.f; }
 	void jshook_slider_colour_green( int v ) { geometry->material().diffuse.g = static_cast<float>(v) / 255.f; }
 	void jshook_slider_colour_blue( int v ) { geometry->material().diffuse.b = static_cast<float>(v) / 255.f; }
-	void jshook_slider_colour_alpha( int v ) { geometry->material().diffuse.a = static_cast<float>(v) / 255.f; }
+	void jshook_slider_colour_alpha( int v ) { geometry->material().alpha = static_cast<float>(v) / 255.f; }
   void jshook_checkbox_use_texture( bool b ) { if( b ) { geometry->textures().diffuse = nullDiffuse; } else { geometry->textures().diffuse.reset(); } }
 	
   EMSCRIPTEN_BINDINGS(webGLTest) {

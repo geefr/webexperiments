@@ -8,14 +8,6 @@
 
 /**
  * Shader interface extension, adds material uniforms
- * 
- * struct Material {
- * 	vec3 ambient;
- * 	vec3 diffuse;
- * 	vec3 specular;
- * 	float shininess;
- * };
- * uniform Material material;
  */
 class Shader_materialinterface : public Shader_lightinterface {
 	public:
@@ -39,6 +31,7 @@ class Shader_materialinterface : public Shader_lightinterface {
 			GLint diffuse = -1;
 			GLint specular = -1;
 			float shininess = -1;
+			float alpha = -1;
 		};
 		MaterialUniform mShaderUniform_material;
 		Material mMaterial;
