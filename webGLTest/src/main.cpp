@@ -4,7 +4,6 @@
 
 #include <GLES3/gl3.h>
 
-
 #ifdef __EMSCRIPTEN__
 # include <emscripten.h>
 # include <emscripten/bind.h>
