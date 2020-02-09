@@ -151,9 +151,9 @@ void pollEvents() {
 				case SDLK_DOWN:
 				  player->rotationDelta().x = 0.1f; break;
         case SDLK_j:
-          player->rotationDelta().z = -0.1f; break;
-        case SDLK_k:
           player->rotationDelta().z = 0.1f; break;
+        case SDLK_k:
+          player->rotationDelta().z = -0.1f; break;
 			}
 		} else if(event.type == SDL_KEYUP) {
 			switch(event.key.keysym.sym)
