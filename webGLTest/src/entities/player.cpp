@@ -74,3 +74,4 @@ void Player::update(float delta) {
 
 void Player::thrusterOn( Player::Thruster t ) { mThrusterState[t].fire = true; }
 void Player::thrusterOff( Player::Thruster t ) { mThrusterState[t].fire = false; }
+void Player::addRotation( glm::vec3 r ) { mRotationDelta += r; }

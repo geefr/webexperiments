@@ -27,6 +27,7 @@ std::shared_ptr<Player> player;
 // First 2 are directional scene lights
 // The rest are used by lasers
 std::vector<Light> lights;
+std::map<int, bool> keystate;
 
 #ifndef __EMSCRIPTEN
 void endApplication() {
@@ -47,6 +48,21 @@ void initResources() {
   renderer->textures()["player.diffuse"].reset(new Texture_SDL2Image("data/models/space/ships/fighter_blocky_01/Diffuse.png"));
   
   renderer->clearColour() = {0.0f,0.0f,0.0f,1.0f};
+  
+  // Populate the key map
+  // TODO: Some kind of input manager in the engine I guess
+  keystate[SDLK_w] = false;
+  keystate[SDLK_s] = false;
+  keystate[SDLK_a] = false;
+  keystate[SDLK_d] = false;
+  keystate[SDLK_q] = false;
+  keystate[SDLK_e] = false;
+  keystate[SDLK_LEFT] = false;
+  keystate[SDLK_RIGHT] = false;
+  keystate[SDLK_UP] = false;
+  keystate[SDLK_DOWN] = false;
+  keystate[SDLK_j] = false;
+  keystate[SDLK_k] = false;
 }
 
 void initEntities() {
@@ -128,35 +144,7 @@ void pollEvents() {
 #endif
 		
 		if(event.type==SDL_KEYDOWN) {
-			switch(event.key.keysym.sym)
-			{
-				case SDLK_w:
-					player->thrusterOn(Player::Thruster::Back); break;
-				case SDLK_s:
-					player->thrusterOn(Player::Thruster::Front); break;
-				case SDLK_a:
-					player->thrusterOn(Player::Thruster::Right); break;
-				case SDLK_d:
-					player->thrusterOn(Player::Thruster::Left); break;
-				case SDLK_q:
-					player->thrusterOn(Player::Thruster::Top); break;
-				case SDLK_e:
-					player->thrusterOn(Player::Thruster::Bottom); break;
-				case SDLK_LEFT:
-				  player->rotationDelta().y = 0.1f; break;
-				case SDLK_RIGHT:
-				  player->rotationDelta().y = -0.1f; break;
-				case SDLK_UP:
-				  player->rotationDelta().x = -0.1f; break;
-				case SDLK_DOWN:
-				  player->rotationDelta().x = 0.1f; break;
-        case SDLK_j:
-          player->rotationDelta().z = 0.1f; break;
-        case SDLK_k:
-          player->rotationDelta().z = -0.1f; break;
-			}
-		} else if(event.type == SDL_KEYUP) {
-			switch(event.key.keysym.sym)
+      switch(event.key.keysym.sym)
 			{
 				case SDLK_w:
 					player->thrusterOff(Player::Thruster::Back); break;
@@ -170,19 +158,50 @@ void pollEvents() {
 					player->thrusterOff(Player::Thruster::Top); break;
 				case SDLK_e:
 					player->thrusterOff(Player::Thruster::Bottom); break;
-				case SDLK_LEFT:
-				  player->rotationDelta().y = 0.0f; break;
+        case SDLK_LEFT:
+          if(!keystate[SDLK_LEFT]) player->addRotation({0.0f,0.1f,0.0f}); break;
 				case SDLK_RIGHT:
-				  player->rotationDelta().y = 0.0f; break;
+          if(!keystate[SDLK_RIGHT]) player->addRotation({0.0f,-0.1f,0.0f}); break;
 				case SDLK_UP:
-				  player->rotationDelta().x = 0.0f; break;
+          if(!keystate[SDLK_UP]) player->addRotation({-0.1f,0.0f,0.0f}); break;
 				case SDLK_DOWN:
-				  player->rotationDelta().x = 0.0f; break;					
+          if(!keystate[SDLK_DOWN]) player->addRotation({0.1f,0.0f,0.0f}); break;
         case SDLK_j:
-          player->rotationDelta().z = 0.0f; break;
+          if(!keystate[SDLK_j]) player->addRotation({0.0f,0.0f,0.1f}); break;
         case SDLK_k:
-          player->rotationDelta().z = 0.0f; break;
+          if(!keystate[SDLK_k]) player->addRotation({0.0f,0.0f,-0.1f}); break;
 			}
+      
+      keystate[event.key.keysym.sym] = true;
+    } else if(event.type == SDL_KEYUP) {
+      switch(event.key.keysym.sym) {
+				case SDLK_w:
+					player->thrusterOn(Player::Thruster::Back); break;
+				case SDLK_s:
+					player->thrusterOn(Player::Thruster::Front); break;
+				case SDLK_a:
+					player->thrusterOn(Player::Thruster::Right); break;
+				case SDLK_d:
+					player->thrusterOn(Player::Thruster::Left); break;
+				case SDLK_q:
+					player->thrusterOn(Player::Thruster::Top); break;
+				case SDLK_e:
+					player->thrusterOn(Player::Thruster::Bottom); break;
+				case SDLK_LEFT:
+          if(keystate[SDLK_LEFT]) player->addRotation({0.0f,-0.1f,0.0f}); break;
+				case SDLK_RIGHT:
+          if(keystate[SDLK_RIGHT]) player->addRotation({0.0f,0.1f,0.0f}); break;
+				case SDLK_UP:
+          if(keystate[SDLK_UP]) player->addRotation({0.1f,0.0f,0.0f}); break;
+				case SDLK_DOWN:
+          if(keystate[SDLK_DOWN]) player->addRotation({-0.1f,0.0f,0.0f}); break;
+        case SDLK_j:
+          if(keystate[SDLK_j]) player->addRotation({0.0f,0.0f,-0.1f}); break;
+        case SDLK_k:
+          if(keystate[SDLK_k]) player->addRotation({0.0f,0.0f,0.1f}); break;
+			}
+      
+      keystate[event.key.keysym.sym] = false;
 		}
 	}
 }

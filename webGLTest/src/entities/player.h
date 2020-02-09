@@ -30,13 +30,11 @@ public:
 	~Player();
 	
 	glm::vec3& position();
-	
 	void update(float delta);
 	
-	void thrusterOn( Player::Thruster t );
-	void thrusterOff( Player::Thruster t );
-	
-	glm::vec3& rotationDelta() { return mRotationDelta; }
+  void thrusterOn( Player::Thruster t );
+  void thrusterOff( Player::Thruster t );
+	void addRotation( glm::vec3 r );
 	
 protected:
   std::shared_ptr<Geometry> mGeometry;
