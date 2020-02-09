@@ -24,7 +24,7 @@ void Laser::positionDelta(glm::vec3 d) { mPositionDelta = d; }
 void Laser::update(float delta) {
 	mPosition += delta * mPositionDelta;
 	if( mPosition.z < -10.0f ) mPosition.z = 0.0f;
-	
+
 	mRotation += delta * mRotationDelta;
 	if( mRotation.x > 2 * M_PI ) mRotation.x = 0.0f;
 	if( mRotation.y > 2 * M_PI ) mRotation.y = 0.0f;

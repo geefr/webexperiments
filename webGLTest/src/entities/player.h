@@ -15,6 +15,16 @@
  */
 class Player {
 public:
+  /// Thruster directions to activate
+  enum class Thruster {
+		Front,
+		Back,
+		Left,
+		Right,
+		Top,
+		Bottom,
+	};
+
 	Player(Renderer& renderer);
 	~Player();
 	
@@ -22,9 +32,31 @@ public:
 	
 	void update(float delta);
 	
+	void thrusterOn( Player::Thruster t );
+	void thrusterOff( Player::Thruster t );
+	
+	glm::vec3& rotationDelta() { return mRotationDelta; }
+	
 protected:
   std::shared_ptr<Geometry> mGeometry;
-  glm::vec3 mPosition;
+  glm::vec3 mPosition = {0.0f,0.0f,0.0f};
+  glm::vec3 mPositionDelta = {0.0f,0.0f,0.0f};
+  glm::vec3 mRotation = {0.0f,0.0f,0.0f};
+  glm::vec3 mRotationDelta = {0.0f,0.0f,0.0f};
+  
+  /// Thruster id, enabled, force direction (points inwards)
+  struct ThrusterState {
+		bool fire;
+		glm::vec3 force;
+	};
+  std::map<Player::Thruster, ThrusterState> mThrusterState = {
+		{Thruster::Front, {false, glm::vec3(0.0f,0.0f,2.0f)}},
+		{Thruster::Back, {false, glm::vec3(0.0f,0.0f,-2.0f)}},
+		{Thruster::Left, {false, glm::vec3(1.0f,0.0f,0.0f)}},
+		{Thruster::Right, {false, glm::vec3(-1.0f,0.0f,0.0f)}},
+		{Thruster::Top, {false, glm::vec3(0.0f,-1.0f,0.0f)}},
+		{Thruster::Bottom, {false, glm::vec3(0.0f,1.0f,0.0f)}},
+	};
 };
 
 #endif

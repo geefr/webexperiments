@@ -22,7 +22,7 @@
 
 std::unique_ptr<Renderer> renderer;
 std::vector<std::shared_ptr<Laser>> lasers;
-auto maxLasers = 8;
+int maxLasers = 8;
 std::shared_ptr<Player> player;
 // First 2 are directional scene lights
 // The rest are used by lasers
@@ -79,7 +79,7 @@ void initPlaySpace() {
 		Light light;
 		light.position = {0.0f, 0.0f, 0.0f, 1.0f};
 		light.colour = {1.0f, 0.0f, 0.0f};
-		light.intensity = {0.5f, 0.5f, 0.8f};
+		light.intensity = {0.0f, 0.5f, 0.8f};
 		lights.emplace_back(light);
 	}
 	
@@ -104,7 +104,7 @@ void updateLasers(float delta) {
 }
 
 void updateRenderParams() {
-	renderer->camera().position = player->position() + glm::vec3(0.0f,1.5f,1.5f);
+	renderer->camera().position = player->position() + glm::vec3(0.0f,1.5f,2.0f);
 	renderer->camera().lookat = player->position() + glm::vec3(0.0f,0.0f,-5.0f);
 	
 	// TODO: This should be inside the engine somewhere really
@@ -115,18 +115,72 @@ void updateRenderParams() {
 	}
 }
 
-void render() {
+void pollEvents() {
+	SDL_Event event;
+	/* get the input, and act upon it */
+	while (SDL_PollEvent(&event))   
+	{
 #ifndef __EMSCRIPTEN__
-  // Get the next event
-  SDL_Event event;
-  if(SDL_PollEvent(&event))
-  {
-    if(event.type == SDL_QUIT)
-    {
-      endApplication();
-    }
-  }
+		if(event.type == SDL_QUIT || (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE))
+		{
+			endApplication();
+		}
 #endif
+		
+		if(event.type==SDL_KEYDOWN) {
+			switch(event.key.keysym.sym)
+			{
+				case SDLK_w:
+					player->thrusterOn(Player::Thruster::Back); break;
+				case SDLK_s:
+					player->thrusterOn(Player::Thruster::Front); break;
+				case SDLK_a:
+					player->thrusterOn(Player::Thruster::Right); break;
+				case SDLK_d:
+					player->thrusterOn(Player::Thruster::Left); break;
+				case SDLK_q:
+					player->thrusterOn(Player::Thruster::Top); break;
+				case SDLK_e:
+					player->thrusterOn(Player::Thruster::Bottom); break;
+				case SDLK_LEFT:
+				  player->rotationDelta().y = 1.0f; break;
+				case SDLK_RIGHT:
+				  player->rotationDelta().y = -1.0f; break;
+				case SDLK_UP:
+				  player->rotationDelta().x = -1.0f; break;
+				case SDLK_DOWN:
+				  player->rotationDelta().x = 1.0f; break;
+			}
+		} else if(event.type == SDL_KEYUP) {
+			switch(event.key.keysym.sym)
+			{
+				case SDLK_w:
+					player->thrusterOff(Player::Thruster::Back); break;
+				case SDLK_s:
+					player->thrusterOff(Player::Thruster::Front); break;
+				case SDLK_a:
+					player->thrusterOff(Player::Thruster::Right); break;
+				case SDLK_d:
+					player->thrusterOff(Player::Thruster::Left); break;
+				case SDLK_q:
+					player->thrusterOff(Player::Thruster::Top); break;
+				case SDLK_e:
+					player->thrusterOff(Player::Thruster::Bottom); break;
+				case SDLK_LEFT:
+				  player->rotationDelta().y = 0.0f; break;
+				case SDLK_RIGHT:
+				  player->rotationDelta().y = 0.0f; break;
+				case SDLK_UP:
+				  player->rotationDelta().x = 0.0f; break;
+				case SDLK_DOWN:
+				  player->rotationDelta().x = 0.0f; break;					
+			}
+		}
+	}
+}
+
+void render() {
+  pollEvents();
 
   renderer->update();
   
