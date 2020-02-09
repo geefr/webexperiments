@@ -46,16 +46,11 @@ void Player::update(float delta) {
 	
   glm::mat4x4 m(1.0f);
 	// translate
-	// m = glm::translate(m, mPosition);
+	m = glm::translate(m, mPosition);
 	
   // Rotate
 
   // mRotation contains the rotation (euler) angles around each axis
-  // First define the rotation axis, these will be modified as we go along as rotations are specified relative to the model
-  //mForward = {0.0f,0.0f,-1.0f};
-  //mUp = {0.0f,1.0f,0.0f};
-  //mRight = {1.0f,0.0f,0.0f};
-
   glm::mat4 xRot(1.0f);
   glm::mat4 yRot(1.0f);
   glm::mat4 zRot(1.0f);
@@ -85,20 +80,6 @@ void Player::update(float delta) {
   // (so listed in reverse here due to operator ordering)
   mRotMatrix = mRotMatrix * zRot * yRot * xRot;
   m = m * mRotMatrix;
-  
-	// rotate
-  //axisRotate(delta * mRotationDelta.x, mRight);
-  //axisRotate(delta * mRotationDelta.y, mUp);
-  //axisRotate(delta * mRotationDelta.z, mForward);
-
-  // Update the rotation matrix for this frame
-  // TODO: Even after fixing the model this seems to be wrong somehow, is this function the wrong handedness???
-  //glm::mat4x4 rotMat = glm::orientation( - mForward, mUp);
-  //m = m * rotMat;
-  
-  // m = rotate(m, mRotation.z, glm::vec3(0.f,0.f,1.f));
-  // m = rotate(m, mRotation.y, glm::vec3(0.f,1.f,0.f));
-  // m = rotate(m, mRotation.x, glm::vec3(1.f,0.f,0.f));
   
 	// scale
 	m = glm::scale(m, glm::vec3(0.5f,0.5f,0.5f));
