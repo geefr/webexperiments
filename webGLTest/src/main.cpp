@@ -143,13 +143,17 @@ void pollEvents() {
 				case SDLK_e:
 					player->thrusterOn(Player::Thruster::Bottom); break;
 				case SDLK_LEFT:
-				  player->rotationDelta().y = 1.0f; break;
+				  player->rotationDelta().y = 0.1f; break;
 				case SDLK_RIGHT:
-				  player->rotationDelta().y = -1.0f; break;
+				  player->rotationDelta().y = -0.1f; break;
 				case SDLK_UP:
-				  player->rotationDelta().x = -1.0f; break;
+				  player->rotationDelta().x = -0.1f; break;
 				case SDLK_DOWN:
-				  player->rotationDelta().x = 1.0f; break;
+				  player->rotationDelta().x = 0.1f; break;
+        case SDLK_j:
+          player->rotationDelta().z = -0.1f; break;
+        case SDLK_k:
+          player->rotationDelta().z = 0.1f; break;
 			}
 		} else if(event.type == SDL_KEYUP) {
 			switch(event.key.keysym.sym)
@@ -174,6 +178,10 @@ void pollEvents() {
 				  player->rotationDelta().x = 0.0f; break;
 				case SDLK_DOWN:
 				  player->rotationDelta().x = 0.0f; break;					
+        case SDLK_j:
+          player->rotationDelta().z = 0.0f; break;
+        case SDLK_k:
+          player->rotationDelta().z = 0.0f; break;
 			}
 		}
 	}
